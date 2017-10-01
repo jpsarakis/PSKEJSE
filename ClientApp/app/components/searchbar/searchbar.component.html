@@ -1,0 +1,10 @@
+﻿<label>Search for JSON Data based on</label><br />&nbsp;
+<md-select placeholder="Search Criterion">
+    <md-option *ngFor="let criterion of criteria" [value]="criterion.value">
+        {{ criterion.description }}
+    </md-option>
+</md-select>
+<md-form-field style="width:75%">
+    <input #SearchFor placeholder="Search For" mdInput>
+</md-form-field>
+<button md-fab color="primary">Search</button>
