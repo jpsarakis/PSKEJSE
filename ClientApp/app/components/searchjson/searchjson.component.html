@@ -1,0 +1,19 @@
+﻿<div layout="row" layout-align="center center" style="text-align:center;">
+    <label>Search for JSON Data</label><br />
+    <md-select placeholder="Search" [(ngModel)]="searchCriterion">
+        <md-option *ngFor="let criterion of criteria" [value]="criterion.value">
+            {{ criterion.description }}
+        </md-option>
+    </md-select>
+    <md-form-field style="width:75%">
+        <input #SearchFilter placeholder="Search Term" mdInput [(ngModel)]="searchFilter" (keyup.enter)="searchJson()">
+    </md-form-field>
+    <button md-fab color="primary" (click)="searchJson()">Search</button>
+    <div style="height:150px"></div>
+    <div [style.display]=" showSpinner ? 'block':'none'" style="text-align:center;width:100%">
+        <label>Please wait ...</label>
+        <md-spinner aria-label="loadingSpinner"  style="margin:0 auto;">Loading Json...</md-spinner>
+    </div>
+    <json-table></json-table>
+</div>
+

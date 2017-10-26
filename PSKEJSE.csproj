@@ -5,10 +5,12 @@
     <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
     <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
     <IsPackable>false</IsPackable>
+    <UserSecretsId>d1319f4e-3fe3-4f4c-bace-bb410010f04d</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -21,7 +23,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="ClientApp\app\components\searchbar\searchbar.component.ts" />
+    <None Remove="ClientApp\app\components\json-table\json-table.component.ts" />
+    <None Remove="ClientApp\app\components\services\json-data.service.ts" />
   </ItemGroup>
 
   <ItemGroup>
@@ -29,7 +32,24 @@
   </ItemGroup>
 
   <ItemGroup>
-    <TypeScriptCompile Include="ClientApp\app\components\searchbar\searchbar.component.ts" />
+    <TypeScriptCompile Include="ClientApp\app\components\json-table\json-table.component.ts" />
+    <TypeScriptCompile Include="ClientApp\app\components\searchjson\searchjson.component.ts" />
+    <TypeScriptCompile Include="ClientApp\app\components\services\json-data.service.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
   <Target Name="DebugRunWebpack" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('wwwroot\dist') ">

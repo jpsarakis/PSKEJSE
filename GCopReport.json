@@ -1,3 +1,18 @@
 {
-  "Items": []
+  "Items": [
+    {
+      "Analyzer": "PropertyToExpressionAnalyzer",
+      "OccurrenceCount": 1,
+      "Exceptions": null,
+      "SentToServer": true,
+      "InstallationName": "JOHNNY"
+    },
+    {
+      "Analyzer": "UseStringCollectionIntersectsAnalyzer",
+      "OccurrenceCount": 1,
+      "Exceptions": null,
+      "SentToServer": true,
+      "InstallationName": "JOHNNY"
+    }
+  ]
 }

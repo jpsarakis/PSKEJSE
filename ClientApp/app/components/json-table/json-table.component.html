@@ -1,0 +1,36 @@
+﻿<md-form-field floatPlaceholder="auto">
+    <input mdInput #filter placeholder="Filter json table">
+</md-form-field>
+
+<md-table #table [dataSource]="dataSource">
+
+    <ng-container mdColumnDef="callPhaseID">
+        <md-header-cell *mdHeaderCellDef> Callphase ID </md-header-cell>
+        <md-cell *mdCellDef="let row"> {{row.callPhaseID}} </md-cell>
+    </ng-container>
+
+     <ng-container mdColumnDef="callID">
+        <md-header-cell *mdHeaderCellDef> Call ID </md-header-cell>
+        <md-cell *mdCellDef="let row"> {{row.callID}} </md-cell>
+    </ng-container>
+
+    <ng-container mdColumnDef="qualifier">
+        <md-header-cell *mdHeaderCellDef> Qualifier </md-header-cell>
+        <md-cell *mdCellDef="let row"> {{row.qualifier}} </md-cell>
+    </ng-container>
+
+    <ng-container mdColumnDef="dataKey">
+        <md-header-cell *mdHeaderCellDef> Data Key </md-header-cell>
+        <md-cell *mdCellDef="let row"> {{row.dataKey}} </md-cell>
+    </ng-container>
+
+    <!--<ng-container mdcolumndef="dataKey">
+        <md-header-cell *mdHeaderCellDef>dataKey</md-header-cell>
+        <md-cell *mdcelldef="let row">{{row.dataKey}}</md-cell>
+    </ng-container>-->
+
+    <md-header-row *mdHeaderRowDef="displayedColumns"></md-header-row>
+    <md-row *mdRowDef="let row; columns: displayedColumns;"></md-row>
+
+</md-table>
+

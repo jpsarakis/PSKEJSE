@@ -3,10 +3,13 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppModuleShared } from './app.module.shared';
 import { AppComponent } from './components/app/app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MdToolbarModule, MdSelectModule, MdFormFieldModule, MdInputModule, MdButtonModule  } from '@angular/material';
+import {
+    MdToolbarModule, MdSelectModule, MdFormFieldModule, MdInputModule, MdButtonModule, MatProgressSpinnerModule,
+    MatGridListModule, MatDialogModule, MatIconModule, MatTableModule
+} from '@angular/material';
 
 @NgModule({
-    bootstrap: [ AppComponent ],
+    bootstrap: [AppComponent],
     imports: [
         BrowserModule,
         BrowserAnimationsModule,
@@ -15,6 +18,11 @@ import { MdToolbarModule, MdSelectModule, MdFormFieldModule, MdInputModule, MdBu
         MdFormFieldModule,
         MdInputModule,
         MdButtonModule,
+        MatProgressSpinnerModule,
+        MatGridListModule,
+        MatDialogModule,
+        MatIconModule,
+        MatTableModule,
         AppModuleShared
     ],
     providers: [
