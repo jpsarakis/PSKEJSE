@@ -13,12 +13,13 @@ import { JsonDataService, JsonDataSummary } from '../services/json-data.service'
 @Component({
     selector: 'json-table',
     templateUrl: './json-table.component.html',
+    styleUrls: ['./json-table.component.css'],
     providers: [JsonDataService]
 })
 export class JsonTable {
 
-    dataSource: ExampleDataSource | null;
-    exampleDatabase: ExampleDatabase;
+    dataSource: JsonDataSource | null;
+    exampleDatabase: JsonDatabase;
     @ViewChild('filter') filter: ElementRef;
     displayedColumns = ['dataKey', 'callID','callPhaseID', 'qualifier'];
     jsondata: JsonDataSummary[];
@@ -31,8 +32,8 @@ export class JsonTable {
 
     initialiseData(data: JsonDataSummary[]) {
         this.jsondata = data;
-        this.exampleDatabase = new ExampleDatabase(this.jsondata);
-        this.dataSource = new ExampleDataSource(this.exampleDatabase);
+        this.exampleDatabase = new JsonDatabase(this.jsondata);
+        this.dataSource = new JsonDataSource(this.exampleDatabase);
 
         Observable.fromEvent(this.filter.nativeElement, 'keyup')
             .debounceTime(150)
@@ -45,7 +46,7 @@ export class JsonTable {
     }
 }
 
-export class ExampleDatabase {
+export class JsonDatabase {
     /** Stream that emits whenever the data has been modified. */
     dataChange: BehaviorSubject<JsonDataSummary[]> = new BehaviorSubject<JsonDataSummary[]>([]);
     get data(): JsonDataSummary[] { return this.dataChange.value; }
@@ -85,14 +86,14 @@ export class ExampleDatabase {
     }
 }
 
-export class ExampleDataSource extends DataSource<any> {
+export class JsonDataSource extends DataSource<any> {
 
     _filterChange = new BehaviorSubject('');
     get filter(): string { return this._filterChange.value; }
     set filter(filter: string) { this._filterChange.next(filter); }
 
    
-    constructor(private _exampleDatabase: ExampleDatabase) {
+    constructor(private _exampleDatabase: JsonDatabase) {
         super();
     }
     /** Connect function called by the table to retrieve one stream containing the data to render. */
@@ -104,7 +105,7 @@ export class ExampleDataSource extends DataSource<any> {
 
         return Observable.merge(...displayDataChanges).map(() => {
             return this._exampleDatabase.data.slice().filter((item: JsonDataSummary) => {
-                let searchstr = (item.dataKey).toLowerCase();
+                let searchstr = (item.dataKey + item.callID + item.callPhaseID + item.qualifier).toLowerCase();
                 return searchstr.indexOf(this.filter.toLowerCase()) != -1;
             });
         });
