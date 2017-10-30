@@ -1,4 +1,4 @@
-﻿import { Component, Input, Output, EventEmitter, OnInit, Inject } from '@angular/core';
+﻿import { Component, Input, Output, EventEmitter, OnInit, Inject, ViewChild } from '@angular/core';
 import { MdDialog, MdDialogRef, MD_DIALOG_DATA } from '@angular/material';
 import { JsonTable } from '../json-table/json-table.component';
 
@@ -11,36 +11,35 @@ import { JsonTable } from '../json-table/json-table.component';
 })
 export class SearchJson {
 
-    showJsonTable: boolean;
     showSpinner: boolean;
     searchCriterion: number;
     searchFilter: string;
+    @ViewChild('jsontable') jsonTable: JsonTable;
 
-    constructor(public dialog: MdDialog) { }
-
-    ngOnInit() {
-        this.showJsonTable = true;
-        this.showSpinner = false;
+    constructor(public dialog: MdDialog) {
     }
 
     criteria = [
-        { value: '1', description: 'Call' },
-        { value: '2', description: 'Callphase' },
+        { value: '0', description: 'All' },
+        { value: '1', description: 'CallID' },
+        { value: '2', description: 'CallPhase' },
         { value: '3', description: 'DataKey' },
-        { value: '4', description: 'Table' }
+        { value: '4', description: 'Qualifier' }
     ];
 
     searchJson() {
-        if (!this.searchCriterion) {
-           this.showDialog('Please specify what to search');
-            return;
-        }
-        if (!this.searchFilter) {
-            this.showDialog('Please specify the search filter');
-            return;
-        }
-        this.showSpinner = true;
 
+        if (!this.searchCriterion || this.searchCriterion==0) {
+            this.jsonTable.getAllRecords();
+        }
+        else {
+            if (!this.searchFilter) {
+                this.showDialog('Please specify the search filter');
+            }
+            else {
+                this.jsonTable.getFilteredRecords(this.searchCriterion.toString(), this.searchFilter);
+            }
+        }
     }
 
     showDialog(message: string) {

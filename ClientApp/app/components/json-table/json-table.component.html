@@ -1,5 +1,9 @@
-﻿<div class="table-container mat-elevation-z8">
-    <div class="table-header">
+﻿<div [style.display]=" showSpinner ? 'block':'none'" style="text-align:center;width:100%">
+    <label>Please wait ...</label>
+    <md-spinner aria-label="loadingSpinner" style="margin:0 auto;">Loading Json...</md-spinner>
+</div>
+<div class="table-container mat-elevation-z8" [style.display]="showTable ? 'block':'none'">
+    <div class="table-header" >
         <md-form-field floatPlaceholder="auto">
             <input mdInput #filter placeholder="Filter json table">
         </md-form-field>
@@ -27,7 +31,7 @@
         </ng-container>
 
         <md-header-row *mdHeaderRowDef="displayedColumns"></md-header-row>
-        <md-row *mdRowDef="let row; columns: displayedColumns;"></md-row>
+        <md-row *mdRowDef="let row; columns: displayedColumns;" (click)="editJSON(row)"></md-row>
 
     </md-table>
 

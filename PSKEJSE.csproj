@@ -23,15 +23,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="ClientApp\app\components\json-edit\json-edit.component.ts" />
     <None Remove="ClientApp\app\components\json-table\json-table.component.ts" />
     <None Remove="ClientApp\app\components\services\json-data.service.ts" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ClientApp\app\components\header\" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <TypeScriptCompile Include="ClientApp\app\components\json-edit\json-edit.component.ts" />
     <TypeScriptCompile Include="ClientApp\app\components\json-table\json-table.component.ts" />
     <TypeScriptCompile Include="ClientApp\app\components\searchjson\searchjson.component.ts" />
     <TypeScriptCompile Include="ClientApp\app\components\services\json-data.service.ts" />

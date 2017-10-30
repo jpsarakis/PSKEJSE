@@ -23,3 +23,18 @@
     overflow: auto;
     max-height: 500px;
 }
+
+.mat-row:hover {
+    background-color: #673ab7;
+    /*box-shadow: 1px 1px #53a7ea, 2px 2px #53a7ea, 3px 3px #53a7ea;
+    -webkit-transform: translateX(-3px);
+    transform: translateX(-3px);*/
+    /*box-shadow: inset 0 0 8px lightgray, 1px 1px 3px darkgray;*/
+    box-shadow: 0 0 9px black;
+}
+.mat-row:hover .mat-cell {
+    color:azure;
+    font-family:'Comic Sans MS';
+    font-weight:700;
+    font-style:italic;
+}

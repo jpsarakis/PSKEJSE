@@ -9,23 +9,28 @@ import { JsonTable } from './components/json-table/json-table.component';
 import { HttpClientModule } from '@angular/common/http';
 import {
     MdToolbarModule, MdSelectModule, MdFormFieldModule, MD_PLACEHOLDER_GLOBAL_OPTIONS, MdInputModule, MdButtonModule,
-    MatProgressSpinnerModule, MatGridListModule, MatDialogModule, MatIconModule, MatTableModule
+    MatProgressSpinnerModule, MatGridListModule, MatDialogModule, MatIconModule, MatTableModule,MatSnackBarModule
 } from '@angular/material';
-import { SearchJson,ErrorDialog } from './components/searchjson/searchjson.component';
-
+import { SearchJson, ErrorDialog } from './components/searchjson/searchjson.component';
+import { ExceptionDialog } from './components/services/json-data.service';
+import { JsonEdit } from './components/json-edit/json-edit.component';
 @NgModule({
     declarations: [
         AppComponent,
         HomeComponent,
         SearchJson,
         ErrorDialog,
+        ExceptionDialog,
+        JsonEdit,
         JsonTable
     ],
     providers: [
         { provide: MD_PLACEHOLDER_GLOBAL_OPTIONS, useValue: { float: 'auto' } }
     ],
     entryComponents: [
-        ErrorDialog
+        ErrorDialog,
+        ExceptionDialog,
+        JsonEdit
     ],
     imports: [
         CommonModule,
@@ -43,6 +48,7 @@ import { SearchJson,ErrorDialog } from './components/searchjson/searchjson.compo
         MatGridListModule,
         MatTableModule,
         MatIconModule,
+        MatSnackBarModule,
         RouterModule.forRoot([
             { path: '', redirectTo: 'home', pathMatch: 'full' },
             { path: 'home', component: HomeComponent },

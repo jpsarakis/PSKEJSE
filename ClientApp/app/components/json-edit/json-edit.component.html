@@ -1,0 +1,14 @@
+﻿<h1 md-dialog-title>{{data.dataKey}}</h1>
+<hr class="mainDivider"/>
+<div md-dialog-content>
+    <p><b>Call ID:</b>&nbsp;{{data.callID}}</p>
+    <hr class="secondaryDivider"/>
+    <p><b>Callphase ID:</b>&nbsp;{{data.callPhaseID}}</p>
+    <hr class="secondaryDivider"/>
+    <p><b>Qualifier:</b>&nbsp;{{data.qualifier}}</p>
+    <textarea #jsondatabyUser [(ngModel)]="data.jsonData"></textarea>
+</div>
+<div md-dialog-actions>
+    <button md-button (click)="onCloseClick()" >Close</button>
+    <button md-button [md-dialog-close]="data.jsonData" tabindex="1" color="primary">Save</button>
+</div>

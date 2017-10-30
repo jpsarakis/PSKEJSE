@@ -26,11 +26,18 @@ namespace PSKEJSE.Controllers
                 CallID = !row.IsNull("CallID") ? (int)row["CallID"] : -1,
                 CallPhaseID = !row.IsNull("CallPhaseID") ? (int)row["CallPhaseID"] : -1,
                 DataKey = !row.IsNull("DataKey") ? (string)row["DataKey"] : "NULL",
-                ID = !row.IsNull("ID") ? (int)row["ID"] : -1,
                 Qualifier = !row.IsNull("Qualifier") ? (string)row["Qualifier"] : "NULL",
-                TableName = !row.IsNull("TableName") ? (string)row["TableName"] : "NULL"
             };
             return json;
+        }
+
+        private void CloseConnection(SqlConnection con)
+        {
+            if (con != null)
+            {
+                if (con.State == ConnectionState.Open) con.Close();
+                con.Dispose();
+            }
         }
 
         [HttpGet("[action]")]
@@ -60,11 +67,7 @@ namespace PSKEJSE.Controllers
             {
                 ds?.Dispose();
                 sda?.Dispose();
-                if (con != null)
-                {
-                    if (con.State == ConnectionState.Open) con.Close();
-                    con.Dispose();
-                }
+                CloseConnection(con);
             }
         }
 
@@ -97,17 +100,38 @@ namespace PSKEJSE.Controllers
             {
                 ds?.Dispose();
                 sda?.Dispose();
-                if (con != null)
-                {
-                    if (con.State == ConnectionState.Open) con.Close();
-                    con.Dispose();
-                }
+                CloseConnection(con);
             }
+        }
+
+        [HttpGet("[action]")]
+        public string GetJsonData()
+        {
+            string key = Request.Query.Where(q => q.Key == "dataKey").Select(q => q.Value).SingleOrDefault();
+            if (key==null || key==String.Empty)
+                throw new Exception("Error while retrieving data from database in api/GetJsonData: DataKey parameter was not specified");
+            var con = new SqlConnection(configuration.GetConnectionString("DEVDB"));
+            var cmd = new SqlCommand($"SELECT Data FROM JsonData WHERE DataKey='{key}'", con);
+            try
+            {
+                con.Open();
+                var result = cmd.ExecuteScalar();
+                if (result != null)
+                    return result.ToString();
+                else
+                    return String.Empty;
+            }
+            finally
+            {
+                cmd?.Dispose();
+                CloseConnection(con);
+            }
+
         }
 
         private string BuildSQLStatement(int criterio, string filter)
         {
-            string statement = "SELECT CallID, CallPhaseID, DataKey, ID, Qualifier, TableName FROM JsonData WHERE ";
+            string statement = "SELECT CallID, CallPhaseID, DataKey, Qualifier FROM JsonData WHERE ";
             string finalStatement = String.Empty;
             switch (criterio)
             {
@@ -118,10 +142,10 @@ namespace PSKEJSE.Controllers
                     finalStatement = String.Concat(statement, $"CallPhaseID = {filter}");
                     break;
                 case 3:
-                    finalStatement = String.Concat(statement, $"DataKey = '{filter}'");
+                    finalStatement = String.Concat(statement, $"DataKey LIKE '{filter}%'");
                     break;
                 case 4:
-                    finalStatement = String.Concat(statement, $"Table = '{filter}'");
+                    finalStatement = String.Concat(statement, $"Qualifier LIKE '{filter}%'");
                     break;
 
                 default:
@@ -138,9 +162,6 @@ namespace PSKEJSE.Controllers
         public string DataKey { get; set; }
         public int CallPhaseID { get; set; }
         public string Qualifier { get; set; }
-        public int ID { get; set; }
-        public string TableName { get; set; }
-
     }
 }
 

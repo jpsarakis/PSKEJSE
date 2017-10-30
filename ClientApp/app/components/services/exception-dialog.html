@@ -1,0 +1,20 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Exception</title>
+</head>
+<body>
+    <h1 md-dialog-title>{{data.status}} {{data.statusText}}</h1>
+    <hr />
+    <p>at {{data.url}}</p>
+    <div class="mainContent">
+        <div md-dialog-content>
+            {{ data.body }}
+        </div>
+    </div>
+    <div align="center" style="padding-top:2em">
+        <button md-button (click)="onOKClick()" color="warn" tabindex="1">OK</button>
+    </div>
+</body>
+</html>

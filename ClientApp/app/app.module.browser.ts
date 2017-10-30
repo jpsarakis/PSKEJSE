@@ -5,7 +5,7 @@ import { AppComponent } from './components/app/app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {
     MdToolbarModule, MdSelectModule, MdFormFieldModule, MdInputModule, MdButtonModule, MatProgressSpinnerModule,
-    MatGridListModule, MatDialogModule, MatIconModule, MatTableModule
+    MatGridListModule, MatDialogModule, MatIconModule, MatTableModule, MatSnackBarModule
 } from '@angular/material';
 
 @NgModule({
@@ -23,7 +23,8 @@ import {
         MatDialogModule,
         MatIconModule,
         MatTableModule,
-        AppModuleShared
+        AppModuleShared,
+        MatSnackBarModule
     ],
     providers: [
         { provide: 'BASE_URL', useFactory: getBaseUrl }

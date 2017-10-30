@@ -8,8 +8,11 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/distinctUntilChanged';
 import 'rxjs/add/observable/fromEvent';
+import 'rxjs/add/operator/catch';
 import { JsonDataService, JsonDataSummary } from '../services/json-data.service'
-
+import { JsonEdit } from '../json-edit/json-edit.component';
+import { MdDialog, MatSnackBar } from '@angular/material';
+import { ErrorDialog } from '../searchjson/searchjson.component'
 @Component({
     selector: 'json-table',
     templateUrl: './json-table.component.html',
@@ -21,13 +24,34 @@ export class JsonTable {
     dataSource: JsonDataSource | null;
     exampleDatabase: JsonDatabase;
     @ViewChild('filter') filter: ElementRef;
-    displayedColumns = ['dataKey', 'callID','callPhaseID', 'qualifier'];
+    displayedColumns = ['dataKey', 'callID', 'callPhaseID', 'qualifier'];
     jsondata: JsonDataSummary[];
+    showSpinner: boolean;
+    showTable: boolean;
 
-    constructor(private jsons: JsonDataService) { }
+    constructor(private jsons: JsonDataService, public dialog: MdDialog, public snackBar: MatSnackBar) { }
 
-    ngOnInit() {
-        this.jsons.getAllJsons().subscribe(jsonResponse => this.initialiseData(jsonResponse));
+    SetControlState(loadingData: boolean) {
+        if (loadingData) {
+            this.showTable = false;
+            this.showSpinner = true;
+        }
+        else {
+            this.showTable = true;
+            this.showSpinner = false;
+        }
+    }
+
+    getAllRecords() {
+        this.SetControlState(true);
+        this.jsons.getAllJsons()
+            .subscribe(jsonResponse => this.initialiseData(jsonResponse));
+
+    }
+
+    getFilteredRecords(criterio: string, searchTerm: string) {
+        this.SetControlState(true);
+        this.jsons.getSpecificJsons(criterio, searchTerm).subscribe(response => this.initialiseData(response));
     }
 
     initialiseData(data: JsonDataSummary[]) {
@@ -42,8 +66,42 @@ export class JsonTable {
                 if (!this.dataSource) { return; }
                 this.dataSource.filter = this.filter.nativeElement.value;
             });
-
+        this.SetControlState(false);
     }
+
+    editJSON(row: any) {
+        let datakey = row.dataKey;
+        let callphaseid = row.callPhaseID;
+        let callid = row.callID;
+        let qualifier = row.qualifier;
+        this.jsons.getJsonData(datakey).subscribe(data => this.editJsonData(datakey, callphaseid, callid, qualifier, data));
+    }
+
+    editJsonData(dk: string, cpid: string, cid: string, qlf: string, returnedData: string) {
+        let obj = JSON.parse(returnedData);
+        let pretifyjson = JSON.stringify(obj, null, ' ');
+        this.dialog.open(JsonEdit, {
+            width: '80%',
+            height: '95%',
+            data: { dataKey: dk, callPhaseID: cpid, qualifier: qlf, callID: cid, jsonData: pretifyjson }
+        })
+            .afterClosed().subscribe(res => this.saveJSON(res, dk));
+    }
+
+    saveJSON(newJSON: string, datakey: string) {
+        try {
+            if (newJSON) {
+                let checkJSONSyntax = JSON.parse(newJSON);
+                this.snackBar.open('Database was updated successfully!', '', { duration: 3000 })
+            }
+        } catch (e) {
+            this.dialog.open(ErrorDialog, {
+                width: '400px',
+                data: { errorMessage: e }
+            });
+        }
+    }
+
 }
 
 export class JsonDatabase {
@@ -61,7 +119,6 @@ export class JsonDatabase {
             for (var i = 0; i < jsondata.length; i++) {
                 this.addJson(i);
             }
-            console.log(this.data);
         }
     }
 
@@ -72,16 +129,13 @@ export class JsonDatabase {
         this.dataChange.next(copiedData);
     }
 
-    createNewJson(index: number):JsonDataSummary {
+    createNewJson(index: number): JsonDataSummary {
 
         return {
-
             qualifier: this.jsondata[index].qualifier,
-            callPhaseID: this.jsondata[index].callPhaseID,
+            callPhaseID: this.jsondata[index].callPhaseID == "-1" ? "NULL" : this.jsondata[index].callPhaseID,
             dataKey: this.jsondata[index].dataKey,
-            callID: this.jsondata[index].callID,
-            tableName: this.jsondata[index].tableName,
-            id: this.jsondata[index].id
+            callID: this.jsondata[index].callID == "-1" ? "NULL" : this.jsondata[index].callID,
         }
     }
 }
@@ -92,7 +146,6 @@ export class JsonDataSource extends DataSource<any> {
     get filter(): string { return this._filterChange.value; }
     set filter(filter: string) { this._filterChange.next(filter); }
 
-   
     constructor(private _exampleDatabase: JsonDatabase) {
         super();
     }
