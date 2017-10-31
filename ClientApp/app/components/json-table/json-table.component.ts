@@ -92,7 +92,8 @@ export class JsonTable {
         try {
             if (newJSON) {
                 let checkJSONSyntax = JSON.parse(newJSON);
-                this.snackBar.open('Database was updated successfully!', '', { duration: 3000 })
+                this.jsons.updateJSONData(datakey, newJSON)
+                    .subscribe(r=>this.snackBar.open('Database was updated successfully!', '', { duration: 3000 }));
             }
         } catch (e) {
             this.dialog.open(ErrorDialog, {

@@ -7,15 +7,19 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System.Data.SqlClient;
 using System.Data;
+using System.Net.Http;
 
 namespace PSKEJSE.Controllers
 {
     [Produces("application/json")]
-    [Route("api/")]
+    [Route("api/Json")]
     public class JsonController : Controller
     {
 
         private readonly IConfiguration configuration;
+        private SqlConnection con = null;
+        private SqlCommand cmd = null;
+        private SqlTransaction tran = null;
 
         public JsonController(IConfiguration config) => configuration = config;
 
@@ -40,10 +44,16 @@ namespace PSKEJSE.Controllers
             }
         }
 
+        private SqlConnection GetConnection()
+        {
+            return new SqlConnection(configuration.GetConnectionString("DEVDB"));
+
+        }
+
         [HttpGet("[action]")]
         public JsonResult GetAllJsons()
         {
-            SqlConnection con = new SqlConnection(configuration.GetConnectionString("DEVDB"));
+            con = GetConnection();
             SqlDataAdapter sda = new SqlDataAdapter("SELECT CallID, CallPhaseID, Data, DataKey, ID, Qualifier, TableName FROM JsonData", con);
             DataSet ds = new DataSet();
 
@@ -72,10 +82,10 @@ namespace PSKEJSE.Controllers
         }
 
         [HttpGet("[action]")]
-        public IEnumerable<JsonDataSummary> GetJsons()
+        public JsonResult GetJsons()
         {
             List<JsonDataSummary> result = new List<JsonDataSummary>();
-            SqlConnection con = new SqlConnection(configuration.GetConnectionString("DEVDB"));
+            con = GetConnection();
             int criterion = -1;
             int.TryParse(Request.Query.Where(r => r.Key == "criterion").Select(r => r.Value).SingleOrDefault(), out criterion);
             string filter = Request.Query.Where(r => r.Key == "filter").Select(r => r.Value).SingleOrDefault();
@@ -89,7 +99,7 @@ namespace PSKEJSE.Controllers
                 foreach (DataRow row in ds.Tables[0].Rows)
                     result.Add(CreateNewJson(row));
 
-                return result;
+                return Json(result);
             }
             catch (Exception e)
             {
@@ -110,7 +120,7 @@ namespace PSKEJSE.Controllers
             string key = Request.Query.Where(q => q.Key == "dataKey").Select(q => q.Value).SingleOrDefault();
             if (key==null || key==String.Empty)
                 throw new Exception("Error while retrieving data from database in api/GetJsonData: DataKey parameter was not specified");
-            var con = new SqlConnection(configuration.GetConnectionString("DEVDB"));
+            var con = GetConnection();
             var cmd = new SqlCommand($"SELECT Data FROM JsonData WHERE DataKey='{key}'", con);
             try
             {
@@ -128,6 +138,45 @@ namespace PSKEJSE.Controllers
             }
 
         }
+
+        [HttpPut("{dataKey}")]
+        public IActionResult Put(string dataKey, [FromBody] object jsonData)
+        {
+            if (jsonData == null) return BadRequest();
+            string finalData = jsonData.ToString().Replace("'", "''");
+            string sqlStatement = $"UPDATE JsonData SET Data='{finalData}' WHERE DataKey='{dataKey}'";
+            try
+            {
+                con = GetConnection();
+                con.Open();
+                tran = con.BeginTransaction("PSKEJSE");
+                cmd = new SqlCommand(sqlStatement, con, tran);
+
+                int rows = cmd.ExecuteNonQuery();
+                if (rows > 1)
+                {
+                    tran.Rollback();
+                    throw new Exception($"{dataKey} was found more than once in table JsonData");
+                }
+                else if (rows < 1)
+                {
+                    tran.Rollback();
+                    return NotFound();
+                }
+                else
+                {
+                    tran.Commit();
+                    return NoContent();
+                }
+            }
+            finally
+            {
+                cmd?.Dispose();
+                tran?.Dispose();
+                CloseConnection(con);
+            }
+        }
+
 
         private string BuildSQLStatement(int criterio, string filter)
         {

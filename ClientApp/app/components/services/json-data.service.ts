@@ -13,7 +13,7 @@ export class JsonDataService {
 
 
     getAllJsons(): Observable<JsonDataSummary[]> {
-        return this.http.get('/api/GetAllJsons')
+        return this.http.get('/api/Json/GetAllJsons')
             .map(res => res.json() as JsonDataSummary[])
             .catch(err => {
                 this.showException(err);
@@ -22,7 +22,7 @@ export class JsonDataService {
     }
 
     getSpecificJsons(criterion: string, filter: string) {
-        return this.http.get('/api/GetJsons?criterion=' + criterion + '&filter=' + filter)
+        return this.http.get('/api/Json/GetJsons?criterion=' + criterion + '&filter=' + filter)
             .map(res => res.json() as JsonDataSummary[])
             .catch(err => {
                 this.showException(err);
@@ -31,10 +31,23 @@ export class JsonDataService {
     }
 
     getJsonData(datakey: string) {
-        return this.http.get('/api/GetJsonData?dataKey=' + datakey)
+        return this.http.get('/api/Json/GetJsonData?dataKey=' + datakey)
             .map(res => res.json() as string)
             .catch(err => {
                 this.showException(err);
+                return Observable.of<string>();
+            });
+    }
+
+    updateJSONData(dataKey:string, newdata: string):Observable<string> {
+        let _headers = new Headers({ 'Content-Type': 'application/json' });
+        return this.http
+            .put(`/api/Json/${dataKey}`,
+            newdata,
+            { headers: _headers })
+            .map(t=>t.json())
+            .catch(err => {
+                this.showException2(err);
                 return Observable.of<string>();
             });
     }
@@ -45,9 +58,15 @@ export class JsonDataService {
             height: '90%',
             data: { status: err.status, statusText: err.statusText, url: err.url, body: err.text() }
         });
-
-
     }
+    showException2(err: Response) {
+        let dialogRef = this.dialog.open(ExceptionDialog, {
+            width: '50%',
+            height: '90%',
+            data: { status: err.status, statusText: err.statusText, url: err.url, body: '' }
+        });
+    }
+
 }
 
 export interface JsonDataSummary {
