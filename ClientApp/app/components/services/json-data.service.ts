@@ -8,12 +8,20 @@ import { MdDialog, MdDialogRef, MD_DIALOG_DATA } from '@angular/material';
 
 @Injectable()
 export class JsonDataService {
+    apiURL: string;
 
     constructor(private http: Http, private dialog: MdDialog) { }
 
+    setApiPath(): string {
+        this.http.get('appsettings.json')
+            .map(response => response.json().ApiPath as AppSettings)
+            .subscribe(url => this.apiURL = url.Path);
+        return this.apiURL;
+    }
 
     getAllJsons(): Observable<JsonDataSummary[]> {
-        return this.http.get('/api/Json/GetAllJsons')
+        console.log(this.apiURL);
+        return this.http.get(this.apiURL + 'GetAllJsons')
             .map(res => res.json() as JsonDataSummary[])
             .catch(err => {
                 this.showException(err);
@@ -22,7 +30,7 @@ export class JsonDataService {
     }
 
     getSpecificJsons(criterion: string, filter: string) {
-        return this.http.get('/api/Json/GetJsons?criterion=' + criterion + '&filter=' + filter)
+        return this.http.get(this.apiURL + 'GetJsons?criterion=' + criterion + '&filter=' + filter)
             .map(res => res.json() as JsonDataSummary[])
             .catch(err => {
                 this.showException(err);
@@ -31,7 +39,7 @@ export class JsonDataService {
     }
 
     getJsonData(datakey: string) {
-        return this.http.get('/api/Json/GetJsonData?dataKey=' + datakey)
+        return this.http.get(this.apiURL + 'GetJsonData?dataKey=' + datakey)
             .map(res => res.json() as string)
             .catch(err => {
                 this.showException(err);
@@ -39,15 +47,15 @@ export class JsonDataService {
             });
     }
 
-    updateJSONData(dataKey:string, newdata: string):Observable<string> {
+    updateJSONData(dataKey: string, newdata: string): Observable<string> {
         let _headers = new Headers({ 'Content-Type': 'application/json' });
         return this.http
-            .put(`/api/Json/${dataKey}`,
+            .put(this.apiURL + `${dataKey}`,
             newdata,
             { headers: _headers })
-            .map(t=>t.json())
+            .map(t => t.json())
             .catch(err => {
-                this.showException2(err);
+                this.showException(err);
                 return Observable.of<string>();
             });
     }
@@ -59,14 +67,7 @@ export class JsonDataService {
             data: { status: err.status, statusText: err.statusText, url: err.url, body: err.text() }
         });
     }
-    showException2(err: Response) {
-        let dialogRef = this.dialog.open(ExceptionDialog, {
-            width: '50%',
-            height: '90%',
-            data: { status: err.status, statusText: err.statusText, url: err.url, body: '' }
-        });
-    }
-
+ 
 }
 
 export interface JsonDataSummary {
@@ -74,6 +75,10 @@ export interface JsonDataSummary {
     callPhaseID: string;
     dataKey: string;
     qualifier: string;
+}
+
+export interface AppSettings {
+    Path: string;
 }
 
 @Component({

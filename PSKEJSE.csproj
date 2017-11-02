@@ -1,83 +1,104 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
-    <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
-    <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
-    <IsPackable>false</IsPackable>
-    <UserSecretsId>d1319f4e-3fe3-4f4c-bace-bb410010f04d</UserSecretsId>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>netcoreapp2.0</TargetFramework>
+        <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
+        <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
+        <IsPackable>false</IsPackable>
+        <UserSecretsId>d1319f4e-3fe3-4f4c-bace-bb410010f04d</UserSecretsId>
+        <Authors>John Psarakis</Authors>
+        <Product>John Psarakis</Product>
+        <Description>Application that edits json data for PSKE</Description>
+        <DockerComposeProjectPath>docker-compose.dcproj</DockerComposeProjectPath>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <!-- Files not to publish (note that the 'dist' subfolders are re-added below) -->
-    <Content Remove="ClientApp\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="ClientApp\app\components\json-edit\json-edit.component.ts" />
-    <None Remove="ClientApp\app\components\json-table\json-table.component.ts" />
-    <None Remove="ClientApp\app\components\services\json-data.service.ts" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <TypeScriptCompile Include="ClientApp\app\components\json-edit\json-edit.component.ts" />
-    <TypeScriptCompile Include="ClientApp\app\components\json-table\json-table.component.ts" />
-    <TypeScriptCompile Include="ClientApp\app\components\searchjson\searchjson.component.ts" />
-    <TypeScriptCompile Include="ClientApp\app\components\services\json-data.service.ts" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Update="Properties\Resources.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-
-  <Target Name="DebugRunWebpack" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('wwwroot\dist') ">
-    <!-- Ensure Node.js is installed -->
-    <Exec Command="node --version" ContinueOnError="true">
-      <Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
-    </Exec>
-    <Error Condition="'$(ErrorCode)' != '0'" Text="Node.js is required to build and run this project. To continue, please install Node.js from https://nodejs.org/, and then restart your command prompt or IDE." />
-
-    <!-- In development, the dist files won't exist on the first run or when cloning to
-         a different machine, so rebuild them if not already present. -->
-    <Message Importance="high" Text="Performing first-run Webpack build..." />
-    <Exec Command="node node_modules/webpack/bin/webpack.js --config webpack.config.vendor.js" />
-    <Exec Command="node node_modules/webpack/bin/webpack.js" />
-  </Target>
-
-  <Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish">
-    <!-- As part of publishing, ensure the JS resources are freshly built in production mode -->
-    <Exec Command="npm install" />
-    <Exec Command="node node_modules/webpack/bin/webpack.js --config webpack.config.vendor.js --env.prod" />
-    <Exec Command="node node_modules/webpack/bin/webpack.js --env.prod" />
-
-    <!-- Include the newly-built files in the publish output -->
     <ItemGroup>
-      <DistFiles Include="wwwroot\dist\**; ClientApp\dist\**" />
-      <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
-        <RelativePath>%(DistFiles.Identity)</RelativePath>
-        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      </ResolvedFileToPublish>
+        <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0" />
+        <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.0" />
     </ItemGroup>
-  </Target>
+
+    <ItemGroup>
+        <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- Files not to publish (note that the 'dist' subfolders are re-added below) -->
+        <Content Remove="ClientApp\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Remove="ClientApp\app\components\json-edit\json-edit.component.ts" />
+        <None Remove="ClientApp\app\components\json-table\json-table.component.ts" />
+        <None Remove="ClientApp\app\components\services\json-data.service.ts" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <TypeScriptCompile Include="ClientApp\app\components\json-edit\json-edit.component.ts" />
+        <TypeScriptCompile Include="ClientApp\app\components\json-table\json-table.component.ts" />
+        <TypeScriptCompile Include="ClientApp\app\components\searchjson\searchjson.component.ts" />
+        <TypeScriptCompile Include="ClientApp\app\components\services\json-data.service.ts" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Update="Properties\Resources.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>Resources.resx</DependentUpon>
+        </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Update="appsettings.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Update="Properties\Resources.resx">
+            <Generator>ResXFileCodeGenerator</Generator>
+            <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+    </ItemGroup>
+
+    <Target Name="DebugRunWebpack" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('wwwroot\dist') ">
+        <!-- Ensure Node.js is installed -->
+        <Exec Command="node --version" ContinueOnError="true">
+            <Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
+        </Exec>
+        <Error Condition="'$(ErrorCode)' != '0'" Text="Node.js is required to build and run this project. To continue, please install Node.js from https://nodejs.org/, and then restart your command prompt or IDE." />
+
+        <!-- In development, the dist files won't exist on the first run or when cloning to
+         a different machine, so rebuild them if not already present. -->
+        <Message Importance="high" Text="Performing first-run Webpack build..." />
+        <Exec Command="node node_modules/webpack/bin/webpack.js --config webpack.config.vendor.js" />
+        <Exec Command="node node_modules/webpack/bin/webpack.js" />
+    </Target>
+
+    <Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish">
+        <!-- As part of publishing, ensure the JS resources are freshly built in production mode -->
+        <Exec Command="npm install" />
+        <Exec Command="node node_modules/webpack/bin/webpack.js --config webpack.config.vendor.js --env.prod" />
+        <Exec Command="node node_modules/webpack/bin/webpack.js --env.prod" />
+
+        <!-- Include the newly-built files in the publish output -->
+        <ItemGroup>
+            <DistFiles Include="wwwroot\dist\**; ClientApp\dist\**" />
+            <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
+                <RelativePath>%(DistFiles.Identity)</RelativePath>
+                <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+            </ResolvedFileToPublish>
+        </ItemGroup>
+    </Target>
+
+    <Target Name="AfterBuildOperations" AfterTargets="AfterBuild">
+        <Copy SourceFiles="$(ProjectDir)appsettings.json" DestinationFiles="$(ProjectDir)wwwroot\appsettings.json" OverwriteReadOnlyFiles="true" />
+    </Target>
+
+    <Target Name="AfterPublishOperations" AfterTargets="AfterPublish">
+        <Delete Files="$(ProjectDir)bin\$(ConfigurationName)\PublishOutput\appsettings.json" />
+        <Copy SourceFiles="$(ProjectDir)bin\$(ConfigurationName)\PublishOutput\appsettings.$(ConfigurationName).json" DestinationFiles="$(ProjectDir)bin\$(ConfigurationName)\PublishOutput\appsettings.json" />
+        <Delete Files="$(ProjectDir)bin\$(ConfigurationName)\PublishOutput\appsettings.$(ConfigurationName).json" />
+        <Copy SourceFiles="$(ProjectDir)bin\$(ConfigurationName)\PublishOutput\appsettings.json" DestinationFiles="$(ProjectDir)bin\$(ConfigurationName)\PublishOutput\wwwroot\appsettings.json" OverwriteReadOnlyFiles="true" />
+    </Target>
 
 </Project>

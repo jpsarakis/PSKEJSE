@@ -1,4 +1,4 @@
-﻿import { Component, ElementRef, ViewChild } from '@angular/core';
+﻿import { Component, ElementRef, ViewChild, OnInit } from '@angular/core';
 import { DataSource } from '@angular/cdk/collections';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
@@ -19,7 +19,7 @@ import { ErrorDialog } from '../searchjson/searchjson.component'
     styleUrls: ['./json-table.component.css'],
     providers: [JsonDataService]
 })
-export class JsonTable {
+export class JsonTable implements OnInit {
 
     dataSource: JsonDataSource | null;
     exampleDatabase: JsonDatabase;
@@ -30,6 +30,10 @@ export class JsonTable {
     showTable: boolean;
 
     constructor(private jsons: JsonDataService, public dialog: MdDialog, public snackBar: MatSnackBar) { }
+
+    ngOnInit() {
+        this.jsons.setApiPath();
+    }
 
     SetControlState(loadingData: boolean) {
         if (loadingData) {
