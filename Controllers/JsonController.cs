@@ -150,7 +150,7 @@ namespace PSKEJSE.Controllers
                 MissingMemberHandling = MissingMemberHandling.Ignore
             };
             var jItem = JsonConvert.DeserializeObject<JsonDataSummary>(jsObj.ToString(), JSONDeserialisationSettings);
-            string jsonData = String.IsNullOrWhiteSpace(jItem.data) ? "NULL" : jItem.data.Replace("'", "''");
+            string jsonData = String.IsNullOrWhiteSpace(jItem.Data) ? "NULL" : jItem.Data.Replace("'", "''");
             string dkName = String.IsNullOrWhiteSpace(jItem.DataKey) ? "NULL" : jItem.DataKey.Replace("'", "''");
             string tblName = String.IsNullOrWhiteSpace(jItem.TableName) ? "NULL" : jItem.TableName.Replace("'", "''");
             string callphaseid = jItem.CallPhaseID > 0 ? jItem.CallPhaseID.ToString() : "NULL";
@@ -225,7 +225,7 @@ namespace PSKEJSE.Controllers
         public string Qualifier { get; set; }
         public int ID { get; set; }
         public string TableName { get; set; }
-        public string data { get; set; }
+        public string Data { get; set; }
     }
 }
 
