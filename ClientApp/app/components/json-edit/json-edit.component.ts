@@ -9,10 +9,10 @@ import { Observable } from "rxjs/Observable";
     styleUrls: ['json-edit.component.css']
 })
 export class JsonEdit implements OnInit {
-    private isJSONInvalid: boolean;
-    private jsonSyntaxError: string;
-    private carretPos: number;
-    private jsonItem: JsonDataSummary;
+    public isJSONInvalid: boolean;
+    public jsonSyntaxError: string;
+    public carretPos: number;
+    public jsonItem: JsonDataSummary;
     @ViewChild('userJSONData') userJSONData: ElementRef;
 
     constructor(
