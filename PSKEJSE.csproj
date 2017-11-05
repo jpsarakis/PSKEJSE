@@ -10,6 +10,7 @@
         <Product>John Psarakis</Product>
         <Description>Application that edits json data for PSKE</Description>
         <DockerComposeProjectPath>docker-compose.dcproj</DockerComposeProjectPath>
+        <Version>1.5.0</Version>
     </PropertyGroup>
 
     <ItemGroup>
