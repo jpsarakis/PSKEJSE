@@ -29,7 +29,14 @@
             <md-header-cell *mdHeaderCellDef> Data Key </md-header-cell>
             <md-cell *mdCellDef="let row"> {{row.dataKey}} </md-cell>
         </ng-container>
-
+        <ng-container mdColumnDef="tableName">
+            <md-header-cell *mdHeaderCellDef> Table Name </md-header-cell>
+            <md-cell *mdCellDef="let row"> {{row.tableName}} </md-cell>
+        </ng-container>
+        <ng-container mdColumnDef="id">
+            <md-header-cell *mdHeaderCellDef> ID </md-header-cell>
+            <md-cell *mdCellDef="let row"> {{row.id}} </md-cell>
+        </ng-container>
         <md-header-row *mdHeaderRowDef="displayedColumns"></md-header-row>
         <md-row *mdRowDef="let row; columns: displayedColumns;" (click)="editJSON(row)"></md-row>
 

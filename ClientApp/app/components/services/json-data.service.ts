@@ -12,11 +12,8 @@ export class JsonDataService {
 
     constructor(private http: Http, private dialog: MdDialog) { }
 
-    setApiPath(): string {
-        this.http.get('appsettings.json')
-            .map(response => response.json().ApiPath as AppSettings)
-            .subscribe(url => this.apiURL = url.Path);
-        return this.apiURL;
+    setApiPath(){
+        this.apiURL = "api/json/";
     }
 
     getAllJsons(): Observable<JsonDataSummary[]> {
@@ -47,11 +44,11 @@ export class JsonDataService {
             });
     }
 
-    updateJSONData(dataKey: string, newdata: string): Observable<string> {
+    updateJSONData(jsonItem:JsonDataSummary): Observable<string> {
         let _headers = new Headers({ 'Content-Type': 'application/json' });
         return this.http
-            .put(this.apiURL + `${dataKey}`,
-            newdata,
+            .put(this.apiURL + `${jsonItem.id}`,
+            jsonItem,
             { headers: _headers })
             .map(t => t.json())
             .catch(err => {
@@ -71,10 +68,13 @@ export class JsonDataService {
 }
 
 export interface JsonDataSummary {
+    id: number;
     callID: string;
     callPhaseID: string;
     dataKey: string;
     qualifier: string;
+    tableName: string;
+    data: any;
 }
 
 export interface AppSettings {

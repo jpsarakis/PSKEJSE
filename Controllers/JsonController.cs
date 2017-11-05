@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System.Data.SqlClient;
 using System.Data;
-using System.Net.Http;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace PSKEJSE.Controllers
 {
@@ -31,6 +30,8 @@ namespace PSKEJSE.Controllers
                 CallPhaseID = !row.IsNull("CallPhaseID") ? (int)row["CallPhaseID"] : -1,
                 DataKey = !row.IsNull("DataKey") ? (string)row["DataKey"] : "NULL",
                 Qualifier = !row.IsNull("Qualifier") ? (string)row["Qualifier"] : "NULL",
+                ID = (int)row["ID"],
+                TableName= !row.IsNull("TableName") ? (string)row["TableName"] : "NULL",
             };
             return json;
         }
@@ -139,12 +140,23 @@ namespace PSKEJSE.Controllers
 
         }
 
-        [HttpPut("{dataKey}")]
-        public IActionResult Put(string dataKey, [FromBody] object jsonData)
+        [HttpPut("{id}")]
+        public IActionResult Put(int id, [FromBody] Object jsObj)
         {
-            if (jsonData == null) return BadRequest();
-            string finalData = jsonData.ToString().Replace("'", "''");
-            string sqlStatement = $"UPDATE JsonData SET Data='{finalData}' WHERE DataKey='{dataKey}'";
+            if (jsObj == null) return BadRequest();
+            var JSONDeserialisationSettings = new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore,
+                MissingMemberHandling = MissingMemberHandling.Ignore
+            };
+            var jItem = JsonConvert.DeserializeObject<JsonDataSummary>(jsObj.ToString(), JSONDeserialisationSettings);
+            string jsonData = String.IsNullOrWhiteSpace(jItem.data) ? "NULL" : jItem.data.Replace("'", "''");
+            string dkName = String.IsNullOrWhiteSpace(jItem.DataKey) ? "NULL" : jItem.DataKey.Replace("'", "''");
+            string tblName = String.IsNullOrWhiteSpace(jItem.TableName) ? "NULL" : jItem.TableName.Replace("'", "''");
+            string callphaseid = jItem.CallPhaseID > 0 ? jItem.CallPhaseID.ToString() : "NULL";
+            string callid = jItem.CallID > 0 ? jItem.CallID.ToString() : "NULL";
+            string qualifier = String.IsNullOrWhiteSpace(jItem.Qualifier) ? "NULL" : jItem.Qualifier.Replace("'","''");
+            string sqlStatement = $"UPDATE JsonData SET Data='{jsonData}', DataKey='{dkName}', TableName='{tblName}', CallID={callid}, CallPhaseID={callphaseid}, Qualifier='{qualifier}' WHERE id='{jItem.ID}'";
             try
             {
                 con = GetConnection();
@@ -156,7 +168,7 @@ namespace PSKEJSE.Controllers
                 if (rows > 1)
                 {
                     tran.Rollback();
-                    throw new Exception($"{dataKey} was found more than once in table JsonData");
+                    throw new Exception($"{jItem.ID} was found more than once in table JsonData");
                 }
                 else if (rows < 1)
                 {
@@ -180,7 +192,7 @@ namespace PSKEJSE.Controllers
 
         private string BuildSQLStatement(int criterio, string filter)
         {
-            string statement = "SELECT CallID, CallPhaseID, DataKey, Qualifier FROM JsonData WHERE ";
+            string statement = "SELECT CallID, CallPhaseID, Data, DataKey, ID, Qualifier, TableName FROM JsonData WHERE ";
             string finalStatement = String.Empty;
             switch (criterio)
             {
@@ -211,6 +223,9 @@ namespace PSKEJSE.Controllers
         public string DataKey { get; set; }
         public int CallPhaseID { get; set; }
         public string Qualifier { get; set; }
+        public int ID { get; set; }
+        public string TableName { get; set; }
+        public string data { get; set; }
     }
 }
 

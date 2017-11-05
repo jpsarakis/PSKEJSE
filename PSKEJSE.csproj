@@ -89,16 +89,4 @@
             </ResolvedFileToPublish>
         </ItemGroup>
     </Target>
-
-    <Target Name="AfterBuildOperations" AfterTargets="AfterBuild">
-        <Copy SourceFiles="$(ProjectDir)appsettings.json" DestinationFiles="$(ProjectDir)wwwroot\appsettings.json" OverwriteReadOnlyFiles="true" />
-    </Target>
-
-    <Target Name="AfterPublishOperations" AfterTargets="AfterPublish">
-        <Delete Files="$(ProjectDir)bin\$(ConfigurationName)\PublishOutput\appsettings.json" />
-        <Copy SourceFiles="$(ProjectDir)bin\$(ConfigurationName)\PublishOutput\appsettings.$(ConfigurationName).json" DestinationFiles="$(ProjectDir)bin\$(ConfigurationName)\PublishOutput\appsettings.json" />
-        <Delete Files="$(ProjectDir)bin\$(ConfigurationName)\PublishOutput\appsettings.$(ConfigurationName).json" />
-        <Copy SourceFiles="$(ProjectDir)bin\$(ConfigurationName)\PublishOutput\appsettings.json" DestinationFiles="$(ProjectDir)bin\$(ConfigurationName)\PublishOutput\wwwroot\appsettings.json" OverwriteReadOnlyFiles="true" />
-    </Target>
-
 </Project>

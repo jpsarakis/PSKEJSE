@@ -1,14 +1,27 @@
-﻿<h1 md-dialog-title>{{data.dataKey}}</h1>
-<hr class="mainDivider"/>
-<div md-dialog-content>
-    <p><b>Call ID:</b>&nbsp;{{data.callID}}</p>
-    <hr class="secondaryDivider"/>
-    <p><b>Callphase ID:</b>&nbsp;{{data.callPhaseID}}</p>
-    <hr class="secondaryDivider"/>
-    <p><b>Qualifier:</b>&nbsp;{{data.qualifier}}</p>
-    <textarea #jsondatabyUser [(ngModel)]="data.jsonData"></textarea>
-</div>
-<div md-dialog-actions>
-    <button md-button (click)="onCloseClick()" >Close</button>
-    <button md-button [md-dialog-close]="data.jsonData" tabindex="1" color="primary">Save</button>
+﻿<div style="height:100%;">
+    <md-form-field floatPlaceholder="auto" style="width:40%">
+        <input mdInput #dataKey [(ngModel)]="jsonItem.dataKey" placeholder="Data Key">
+    </md-form-field>
+    <md-form-field floatPlaceholder="auto" style="width:5%">
+        <input mdInput #callID [(ngModel)]="jsonItem.callID" placeholder="Call ID">
+    </md-form-field>
+    <md-form-field floatPlaceholder="auto" style="width:10%">
+        <input mdInput #callphaseID [(ngModel)]="jsonItem.callPhaseID" placeholder="Callphase ID">
+    </md-form-field>
+    <md-form-field floatPlaceholder="auto">
+        <input mdInput #qualifier [(ngModel)]="jsonItem.qualifier" placeholder="Qualifier ">
+    </md-form-field>
+    <md-form-field floatPlaceholder="auto" style="width:20%">
+        <input mdInput #qualifier [(ngModel)]="jsonItem.tableName" placeholder="Table Name">
+    </md-form-field>
+    <div class="carretPos"><label>&nbsp;Caret Position&nbsp;&nbsp;</label>&nbsp;&nbsp;{{carretPos}}</div>
+    <div class="invalidJSON" [style.display]="isJSONInvalid?'inline-block':'none'">{{jsonSyntaxError}}</div>
+    <div style="height:85%;">
+        <textarea mdInput [(ngModel)]="jsonItem.data" #userJSONData></textarea>
+    </div>
+    <div>
+        <button md-button (click)="onCloseClick()">Close</button>
+        <button md-button [md-dialog-close]="jsonItem" [disabled]="isJSONInvalid" tabindex="1" color="primary">Save</button>
+        <button md-button (click)="pretifyJSON()" color="accent" [disabled]="isJSONInvalid">Pretify JSON</button>
+    </div>
 </div>

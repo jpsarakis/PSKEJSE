@@ -13,6 +13,7 @@ import { JsonDataService, JsonDataSummary } from '../services/json-data.service'
 import { JsonEdit } from '../json-edit/json-edit.component';
 import { MdDialog, MatSnackBar } from '@angular/material';
 import { ErrorDialog } from '../searchjson/searchjson.component'
+
 @Component({
     selector: 'json-table',
     templateUrl: './json-table.component.html',
@@ -24,7 +25,7 @@ export class JsonTable implements OnInit {
     dataSource: JsonDataSource | null;
     exampleDatabase: JsonDatabase;
     @ViewChild('filter') filter: ElementRef;
-    displayedColumns = ['dataKey', 'callID', 'callPhaseID', 'qualifier'];
+    displayedColumns = ['id', 'dataKey', 'callID', 'callPhaseID', 'qualifier', 'tableName'];
     jsondata: JsonDataSummary[];
     showSpinner: boolean;
     showTable: boolean;
@@ -75,29 +76,36 @@ export class JsonTable implements OnInit {
 
     editJSON(row: any) {
         let datakey = row.dataKey;
-        let callphaseid = row.callPhaseID;
-        let callid = row.callID;
-        let qualifier = row.qualifier;
-        this.jsons.getJsonData(datakey).subscribe(data => this.editJsonData(datakey, callphaseid, callid, qualifier, data));
+        let callphaseid = row.callPhaseID === 'NULL' ? '' : row.callPhaseID;
+        let callid = row.callID === 'NULL' ? '' : row.callID;
+        let qualifier = row.qualifier === 'NULL' ? '' : row.qualifier;
+        let id = row.id;
+        let tbName = row.tableName === 'NULL' ? '' : row.tableName;
+        this.jsons.getJsonData(datakey).subscribe(data => this.editJsonData(id, datakey, callphaseid, callid, qualifier, data, tbName, row));
     }
 
-    editJsonData(dk: string, cpid: string, cid: string, qlf: string, returnedData: string) {
-        let obj = JSON.parse(returnedData);
-        let pretifyjson = JSON.stringify(obj, null, ' ');
+    editJsonData(_id: number, dk: string, cpid: string, cid: string, qlf: string, returnedData: string, _tableName: string, originalRow: any) {
         this.dialog.open(JsonEdit, {
             width: '80%',
             height: '95%',
-            data: { dataKey: dk, callPhaseID: cpid, qualifier: qlf, callID: cid, jsonData: pretifyjson }
+            data: { id: _id, dataKey: dk, callPhaseID: cpid, qualifier: qlf, callID: cid, jsonData: returnedData, tableName: _tableName }
         })
-            .afterClosed().subscribe(res => this.saveJSON(res, dk));
+            .afterClosed().subscribe(res => this.saveJSON(res, originalRow));
     }
 
-    saveJSON(newJSON: string, datakey: string) {
+    saveJSON(js: JsonDataSummary, tableRow: any) {
         try {
-            if (newJSON) {
-                let checkJSONSyntax = JSON.parse(newJSON);
-                this.jsons.updateJSONData(datakey, newJSON)
-                    .subscribe(r=>this.snackBar.open('Database was updated successfully!', '', { duration: 3000 }));
+            if (js) {
+                let checkJSONSyntax = JSON.parse(js.data);
+                this.jsons.updateJSONData(js)
+                    .subscribe(r => {
+                        tableRow.dataKey = js.dataKey === "" ? 'NULL' : js.dataKey; console.log(js.dataKey);
+                        tableRow.callPhaseID = js.callPhaseID === "" ? 'NULL' : js.callPhaseID; console.log(js.callPhaseID);
+                        tableRow.callID = js.callID === "" ? 'NULL' : js.callID;
+                        tableRow.qualifier = js.qualifier === "" ? 'NULL' : js.qualifier;
+                        tableRow.tableName = js.tableName === "" ? 'NULL' : js.tableName;
+                        this.snackBar.open('Database was updated successfully!', '', { duration: 3000 });
+                    });
             }
         } catch (e) {
             this.dialog.open(ErrorDialog, {
@@ -118,7 +126,7 @@ export class JsonDatabase {
         // Fill up the database with 100 users.
 
         if (!this.jsondata) {
-            console.log('Failed to get data from service');
+            alert('Failed to get data from service');
         }
         else {
             for (var i = 0; i < jsondata.length; i++) {
@@ -130,17 +138,21 @@ export class JsonDatabase {
     /** Adds a new user to the database. */
     addJson(index: number) {
         const copiedData = this.data.slice();
-        copiedData.push(this.createNewJson(index));
+        let d = this.createNewJson(index);
+        copiedData.push(d);
         this.dataChange.next(copiedData);
     }
 
     createNewJson(index: number): JsonDataSummary {
 
         return {
+            id: this.jsondata[index].id,
             qualifier: this.jsondata[index].qualifier,
             callPhaseID: this.jsondata[index].callPhaseID == "-1" ? "NULL" : this.jsondata[index].callPhaseID,
             dataKey: this.jsondata[index].dataKey,
             callID: this.jsondata[index].callID == "-1" ? "NULL" : this.jsondata[index].callID,
+            tableName: this.jsondata[index].tableName,
+            data: ""
         }
     }
 }
