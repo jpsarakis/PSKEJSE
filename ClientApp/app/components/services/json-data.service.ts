@@ -13,7 +13,7 @@ export class JsonDataService {
     constructor(private http: Http, private dialog: MdDialog) { }
 
     setApiPath(){
-        this.apiURL = "api/json/";
+        this.apiURL = "pskejse/api/json/";
     }
 
     getAllJsons(): Observable<JsonDataSummary[]> {
