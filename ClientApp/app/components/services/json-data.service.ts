@@ -6,6 +6,8 @@ import 'rxjs/add/operator/catch';
 import 'rxjs/add/observable/of';
 import { MdDialog, MdDialogRef, MD_DIALOG_DATA } from '@angular/material';
 
+
+
 @Injectable()
 export class JsonDataService {
     apiURL: string;
@@ -13,7 +15,8 @@ export class JsonDataService {
     constructor(private http: Http, private dialog: MdDialog) { }
 
     setApiPath(){
-        this.apiURL = "pskejse/api/json/";
+        //this.apiURL = "pskejse/api/json/";
+        this.apiURL = "api/json/";
     }
 
     getAllJsons(): Observable<JsonDataSummary[]> {
