@@ -11,10 +11,11 @@ import "brace/mode/json";
     styleUrls: ['json-edit.component.css']
 })
 export class JsonEdit implements OnInit {
-    private isJSONInvalid: boolean;
-    public jsonItem: JsonDataSummary;
+
+    public aceTheme: string = "textmate"; // Must be public otherwise it causes issues during publish
+    public isJSONInvalid: boolean; // Must be public otherwise it causes issues during publish
+    public jsonItem: JsonDataSummary; 
     @ViewChild('aceeditor') aceEditor: any;
-    private aceTheme: string="textmate";
 
 
     constructor(
