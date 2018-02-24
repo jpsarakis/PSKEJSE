@@ -1,22 +1,6 @@
-﻿textarea {
-    width: 100%;
-    height: 100%;
+﻿.jsop-edit-toolbar label {
+    box-shadow: 0 0 9px black;
+    font-family: Cambria;
+    background-color: #3f51b5;
+    color: azure;
 }
-
-.invalidJSON {
-    padding-left: 1em;
-    color:darkred;
-    font-family: Consolas;
-    font-weight: bold;
-}
-
-.carretPos {
-    color: black;
-    display:inline-block;
-}
-    .carretPos label {
-        box-shadow: 0 0 9px black;
-        font-family:Cambria;
-        background-color: #673ab7;
-        color: azure;
-    }

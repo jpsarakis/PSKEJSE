@@ -14,14 +14,23 @@
     <md-form-field floatPlaceholder="auto" style="width:20%">
         <input mdInput #qualifier [(ngModel)]="jsonItem.tableName" placeholder="Table Name">
     </md-form-field>
-    <div class="carretPos"><label>&nbsp;Caret Position&nbsp;&nbsp;</label>&nbsp;&nbsp;{{carretPos}}</div>
-    <div class="invalidJSON" [style.display]="isJSONInvalid?'inline-block':'none'">{{jsonSyntaxError}}</div>
-    <div style="height:85%;">
-        <textarea mdInput [(ngModel)]="jsonItem.data" #userJSONData></textarea>
-    </div>
-    <div>
+    <ace-editor 
+                [(text)]="jsonItem.data" 
+                style="height:85%;" 
+                [mode]="'json'"
+                [autoUpdateContent]="true"
+                #aceeditor 
+                (textChanged)="onAceEditorTextChanged($event)">
+    </ace-editor>
+    <div class="jsop-edit-toolbar" style="display:flex; flex-direction:row">
         <button md-button (click)="onCloseClick()">Close</button>
         <button md-button [md-dialog-close]="jsonItem" [disabled]="isJSONInvalid" tabindex="1" color="primary">Save</button>
         <button md-button (click)="pretifyJSON()" color="accent" [disabled]="isJSONInvalid">Prettify JSON</button>
+        <span style="flex:1 0 auto;"></span>
+        <md-select placeholder="Theme" [(ngModel)]="aceTheme" (change)="changeTheme()">
+            <md-option *ngFor="let theme of aceThemes" [value]="theme.value">
+                {{ theme.description }}
+            </md-option>
+        </md-select>
     </div>
 </div>

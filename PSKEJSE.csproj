@@ -10,7 +10,7 @@
         <Product>John Psarakis</Product>
         <Description>Application that edits json data for PSKE</Description>
         <DockerComposeProjectPath>docker-compose.dcproj</DockerComposeProjectPath>
-        <Version>1.5.0</Version>
+        <Version>1.6.0</Version>
     </PropertyGroup>
 
     <ItemGroup>
@@ -24,18 +24,23 @@
 
     <ItemGroup>
         <!-- Files not to publish (note that the 'dist' subfolders are re-added below) -->
+        <Compile Remove="ClientApp\app\components\NewFolder\**" />
         <Content Remove="ClientApp\**" />
+        <EmbeddedResource Remove="ClientApp\app\components\NewFolder\**" />
+        <None Remove="ClientApp\app\components\NewFolder\**" />
     </ItemGroup>
 
     <ItemGroup>
-        <None Remove="ClientApp\app\components\ace-editor\ace-editor.ts" />
         <None Remove="ClientApp\app\components\json-edit\json-edit.component.ts" />
         <None Remove="ClientApp\app\components\json-table\json-table.component.ts" />
         <None Remove="ClientApp\app\components\services\json-data.service.ts" />
     </ItemGroup>
 
     <ItemGroup>
-        <TypeScriptCompile Include="ClientApp\app\components\ace-editor\ace-editor.ts" />
+      <None Include="wwwroot\dist\Assets\Images\InfoV1.png" />
+    </ItemGroup>
+
+    <ItemGroup>
         <TypeScriptCompile Include="ClientApp\app\components\json-edit\json-edit.component.ts" />
         <TypeScriptCompile Include="ClientApp\app\components\json-table\json-table.component.ts" />
         <TypeScriptCompile Include="ClientApp\app\components\searchjson\searchjson.component.ts" />
@@ -61,10 +66,6 @@
             <Generator>ResXFileCodeGenerator</Generator>
             <LastGenOutput>Resources.Designer.cs</LastGenOutput>
         </EmbeddedResource>
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="ClientApp\app\components\NewFolder\" />
     </ItemGroup>
 
     <Target Name="DebugRunWebpack" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('wwwroot\dist') ">

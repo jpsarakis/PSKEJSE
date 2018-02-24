@@ -14,6 +14,9 @@ import {
 import { SearchJson, ErrorDialog } from './components/searchjson/searchjson.component';
 import { ExceptionDialog } from './components/services/json-data.service';
 import { JsonEdit } from './components/json-edit/json-edit.component';
+import { AceEditorModule } from 'ng2-ace-editor'
+
+
 @NgModule({
     declarations: [
         AppComponent,
@@ -46,6 +49,7 @@ import { JsonEdit } from './components/json-edit/json-edit.component';
         MatProgressSpinnerModule,
         MatDialogModule,
         MatGridListModule,
+        AceEditorModule,
         MatTableModule,
         MatIconModule,
         MatSnackBarModule,

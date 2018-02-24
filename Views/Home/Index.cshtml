@@ -3,7 +3,12 @@
 }
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
       rel="stylesheet">
-<app asp-prerender-module="ClientApp/dist/main-server">Loading...</app>
+<app asp-ng2-prerender-module="ClientApp/dist/main-server">
+    <div style="text-align:center">
+        <img src="dist/Assets/Images/InfoV1.png" />
+        <h1>Application is curently loading... Please wait</h1>
+    </div>
+</app>
 
 <script src="~/dist/vendor.js" asp-append-version="true"></script>
 @section scripts {

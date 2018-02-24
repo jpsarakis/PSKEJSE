@@ -15,7 +15,6 @@ export class JsonDataService {
     constructor(private http: Http, private dialog: MdDialog) { }
 
     setApiPath(){
-        //this.apiURL = "pskejse/api/json/";
         this.apiURL = "api/json/";
     }
 
