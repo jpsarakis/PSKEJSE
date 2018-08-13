@@ -30,19 +30,19 @@ export class SearchJson {
     searchJson() {
 
         if (!this.searchCriterion || this.searchCriterion==0) {
-            this.jsonTable.getAllRecords();
+            this.jsonTable.GetAllRecords();
         }
         else {
             if (!this.searchFilter) {
-                this.showDialog('Please specify the search filter');
+                this.showError('Please specify the search filter');
             }
             else {
-                this.jsonTable.getFilteredRecords(this.searchCriterion.toString(), this.searchFilter);
+                this.jsonTable.GetFilteredRecords(this.searchCriterion.toString(), this.searchFilter);
             }
         }
     }
 
-    showDialog(message: string) {
+    showError(message: string) {
         let dialogRef = this.dialog.open(ErrorDialog, {
             width: '350px',
             data: { errorMessage: message }

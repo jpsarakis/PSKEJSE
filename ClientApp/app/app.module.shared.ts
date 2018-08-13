@@ -9,13 +9,14 @@ import { JsonTable } from './components/json-table/json-table.component';
 import { HttpClientModule } from '@angular/common/http';
 import {
     MdToolbarModule, MdSelectModule, MdFormFieldModule, MD_PLACEHOLDER_GLOBAL_OPTIONS, MdInputModule, MdButtonModule,
-    MatProgressSpinnerModule, MatGridListModule, MatDialogModule, MatIconModule, MatTableModule,MatSnackBarModule
+    MatProgressSpinnerModule, MatGridListModule, MatDialogModule, MatIconModule, MatTableModule, MatSnackBarModule,
+    MdProgressBarModule, MdTooltipModule
 } from '@angular/material';
 import { SearchJson, ErrorDialog } from './components/searchjson/searchjson.component';
 import { ExceptionDialog } from './components/services/json-data.service';
 import { JsonEdit } from './components/json-edit/json-edit.component';
 import { AceEditorModule } from 'ng2-ace-editor'
-
+import { PopupMenu } from './components/popup-menu/popup-menu.component';
 
 @NgModule({
     declarations: [
@@ -25,7 +26,8 @@ import { AceEditorModule } from 'ng2-ace-editor'
         ErrorDialog,
         ExceptionDialog,
         JsonEdit,
-        JsonTable
+        JsonTable,
+        PopupMenu
     ],
     providers: [
         { provide: MD_PLACEHOLDER_GLOBAL_OPTIONS, useValue: { float: 'auto' } }
@@ -52,7 +54,9 @@ import { AceEditorModule } from 'ng2-ace-editor'
         AceEditorModule,
         MatTableModule,
         MatIconModule,
+        MdProgressBarModule,
         MatSnackBarModule,
+        MdTooltipModule,
         RouterModule.forRoot([
             { path: '', redirectTo: 'home', pathMatch: 'full' },
             { path: 'home', component: HomeComponent },

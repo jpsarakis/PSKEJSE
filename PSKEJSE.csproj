@@ -7,7 +7,7 @@
         <IsPackable>false</IsPackable>
         <UserSecretsId>d1319f4e-3fe3-4f4c-bace-bb410010f04d</UserSecretsId>
         <Authors>John Psarakis</Authors>
-        <Product>John Psarakis</Product>
+        <Product>PSKE JSON Editor</Product>
         <Description>Application that edits json data for PSKE</Description>
         <DockerComposeProjectPath>docker-compose.dcproj</DockerComposeProjectPath>
         <Version>1.6.0</Version>
@@ -24,15 +24,13 @@
 
     <ItemGroup>
         <!-- Files not to publish (note that the 'dist' subfolders are re-added below) -->
-        <Compile Remove="ClientApp\app\components\NewFolder\**" />
         <Content Remove="ClientApp\**" />
-        <EmbeddedResource Remove="ClientApp\app\components\NewFolder\**" />
-        <None Remove="ClientApp\app\components\NewFolder\**" />
     </ItemGroup>
 
     <ItemGroup>
         <None Remove="ClientApp\app\components\json-edit\json-edit.component.ts" />
         <None Remove="ClientApp\app\components\json-table\json-table.component.ts" />
+        <None Remove="ClientApp\app\components\popup-menu\popup-menu.component.ts" />
         <None Remove="ClientApp\app\components\services\json-data.service.ts" />
     </ItemGroup>
 
@@ -43,6 +41,7 @@
     <ItemGroup>
         <TypeScriptCompile Include="ClientApp\app\components\json-edit\json-edit.component.ts" />
         <TypeScriptCompile Include="ClientApp\app\components\json-table\json-table.component.ts" />
+        <TypeScriptCompile Include="ClientApp\app\components\popup-menu\popup-menu.component.ts" />
         <TypeScriptCompile Include="ClientApp\app\components\searchjson\searchjson.component.ts" />
         <TypeScriptCompile Include="ClientApp\app\components\services\json-data.service.ts" />
     </ItemGroup>

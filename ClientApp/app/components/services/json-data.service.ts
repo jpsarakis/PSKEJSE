@@ -12,14 +12,12 @@ import { MdDialog, MdDialogRef, MD_DIALOG_DATA } from '@angular/material';
 export class JsonDataService {
     apiURL: string;
 
-    constructor(private http: Http, private dialog: MdDialog) { }
-
-    setApiPath(){
+    constructor(private http: Http, private dialog: MdDialog) {
         this.apiURL = "api/json/";
     }
 
+    
     getAllJsons(): Observable<JsonDataSummary[]> {
-        console.log(this.apiURL);
         return this.http.get(this.apiURL + 'GetAllJsons')
             .map(res => res.json() as JsonDataSummary[])
             .catch(err => {
@@ -37,8 +35,8 @@ export class JsonDataService {
             });
     }
 
-    getJsonData(datakey: string) {
-        return this.http.get(this.apiURL + 'GetJsonData?dataKey=' + datakey)
+    getJsonData(id: number) {
+        return this.http.get(this.apiURL + 'GetJsonData?id=' + id)
             .map(res => res.json() as string)
             .catch(err => {
                 this.showException(err);
@@ -79,9 +77,6 @@ export interface JsonDataSummary {
     data: any;
 }
 
-export interface AppSettings {
-    Path: string;
-}
 
 @Component({
     selector: 'exception-dialog',

@@ -1,14 +1,19 @@
 ﻿<div [style.display]=" showSpinner ? 'block':'none'" style="text-align:center;width:100%">
     <label>Please wait ...</label>
-    <md-spinner aria-label="loadingSpinner" style="margin:0 auto;">Loading Json...</md-spinner>
+    <md-spinner aria-label="loadingSpinner" style="margin:0 auto;">Loading...</md-spinner>
+</div>
+<popup-menu #popupmenu (buttonClicked)="PopupMenuAction($event)"></popup-menu>
+<div [style.display]=" showLoadingProgreesBar ? 'block':'none'" style="text-align:center;width:100%;height:3em;">
+    <label>Please wait, fetching requested data ...</label>
+    <md-progress-bar mode="buffer" style="width:25%;margin:0 auto;"></md-progress-bar>
 </div>
 <div class="table-container mat-elevation-z8" [style.display]="showTable ? 'block':'none'">
-    <div class="table-header" >
+    <div class="table-header">
         <md-form-field floatPlaceholder="auto">
             <input mdInput #filter placeholder="Filter json table">
         </md-form-field>
     </div>
-    <md-table #table [dataSource]="dataSource">
+    <md-table #table [dataSource]="dataSource" >
 
         <ng-container mdColumnDef="callPhaseID">
             <md-header-cell *mdHeaderCellDef> Callphase ID </md-header-cell>
@@ -38,8 +43,7 @@
             <md-cell *mdCellDef="let row"> {{row.id}} </md-cell>
         </ng-container>
         <md-header-row *mdHeaderRowDef="displayedColumns"></md-header-row>
-        <md-row *mdRowDef="let row; columns: displayedColumns;" (click)="editJSON(row)"></md-row>
-
+        <md-row *mdRowDef="let row; columns: displayedColumns;" (click)="ShowPopupMenu(row,$event)"  ></md-row>
     </md-table>
-
+    
 </div>

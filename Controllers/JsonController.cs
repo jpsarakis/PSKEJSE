@@ -31,7 +31,7 @@ namespace PSKEJSE.Controllers
                 DataKey = !row.IsNull("DataKey") ? (string)row["DataKey"] : "NULL",
                 Qualifier = !row.IsNull("Qualifier") ? (string)row["Qualifier"] : "NULL",
                 ID = (int)row["ID"],
-                TableName= !row.IsNull("TableName") ? (string)row["TableName"] : "NULL",
+                TableName = !row.IsNull("TableName") ? (string)row["TableName"] : "NULL",
             };
             return json;
         }
@@ -118,11 +118,13 @@ namespace PSKEJSE.Controllers
         [HttpGet("[action]")]
         public string GetJsonData()
         {
-            string key = Request.Query.Where(q => q.Key == "dataKey").Select(q => q.Value).SingleOrDefault();
-            if (key==null || key==String.Empty)
-                throw new Exception("Error while retrieving data from database in api/GetJsonData: DataKey parameter was not specified");
+            int key = -1;
+            int.TryParse(Request.Query.Where(q => q.Key == "id").Select(q => q.Value).SingleOrDefault(),
+                         out key);
+            if (key <= 0)
+                throw new Exception("Error while retrieving data from database in api/GetJsonData: ID parameter was not specified");
             var con = GetConnection();
-            var cmd = new SqlCommand($"SELECT Data FROM JsonData WHERE DataKey='{key}'", con);
+            var cmd = new SqlCommand($"SELECT Data FROM JsonData WHERE ID={key}", con);
             try
             {
                 con.Open();
@@ -155,7 +157,7 @@ namespace PSKEJSE.Controllers
             string tblName = String.IsNullOrWhiteSpace(jItem.TableName) ? "NULL" : jItem.TableName.Replace("'", "''");
             string callphaseid = jItem.CallPhaseID > 0 ? jItem.CallPhaseID.ToString() : "NULL";
             string callid = jItem.CallID > 0 ? jItem.CallID.ToString() : "NULL";
-            string qualifier = String.IsNullOrWhiteSpace(jItem.Qualifier) ? "NULL" : jItem.Qualifier.Replace("'","''");
+            string qualifier = String.IsNullOrWhiteSpace(jItem.Qualifier) ? "NULL" : jItem.Qualifier.Replace("'", "''");
             string sqlStatement = $"UPDATE JsonData SET Data='{jsonData}', DataKey='{dkName}', TableName='{tblName}', CallID={callid}, CallPhaseID={callphaseid}, Qualifier='{qualifier}' WHERE id='{jItem.ID}'";
             try
             {

@@ -4,7 +4,8 @@ import { AppModuleShared } from './app.module.shared';
 import { AppComponent } from './components/app/app.component';
 import {
     MdToolbarModule, MdSelectModule, MdFormFieldModule, MdInputModule, MdButtonModule, MatProgressSpinnerModule,
-    MatGridListModule, MatDialogModule, MatIconModule, MatTableModule, MatSnackBarModule} from '@angular/material';
+    MatGridListModule, MatDialogModule, MatIconModule, MatTableModule, MatSnackBarModule, MdProgressBarModule
+    , MdTooltipModule} from '@angular/material';
 
 @NgModule({
     bootstrap: [ AppComponent ],
@@ -21,7 +22,10 @@ import {
         MatIconModule,
         MatTableModule,
         AppModuleShared,
-        MatSnackBarModule
+        MatSnackBarModule,
+        MdProgressBarModule,
+        MdTooltipModule
+        
     ]
 })
 export class AppModule {

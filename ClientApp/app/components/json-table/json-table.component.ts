@@ -1,4 +1,4 @@
-﻿import { Component, ElementRef, ViewChild, OnInit } from '@angular/core';
+﻿import { Component, ElementRef, ViewChild } from '@angular/core';
 import { DataSource } from '@angular/cdk/collections';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
@@ -12,7 +12,9 @@ import 'rxjs/add/operator/catch';
 import { JsonDataService, JsonDataSummary } from '../services/json-data.service'
 import { JsonEdit } from '../json-edit/json-edit.component';
 import { MdDialog, MatSnackBar } from '@angular/material';
-import { ErrorDialog } from '../searchjson/searchjson.component'
+import { ErrorDialog } from '../searchjson/searchjson.component';
+import { PopupMenu } from '../popup-menu/popup-menu.component';
+
 
 @Component({
     selector: 'json-table',
@@ -20,21 +22,28 @@ import { ErrorDialog } from '../searchjson/searchjson.component'
     styleUrls: ['./json-table.component.css'],
     providers: [JsonDataService]
 })
-export class JsonTable implements OnInit {
+export class JsonTable  {
 
     dataSource: JsonDataSource | null;
-    exampleDatabase: JsonDatabase;
+    exampleDatabase: JsonDatabase | undefined;
     @ViewChild('filter') filter: ElementRef;
     displayedColumns = ['id', 'dataKey', 'callID', 'callPhaseID', 'qualifier', 'tableName'];
-    jsondata: JsonDataSummary[];
+    jsondata: JsonDataSummary[] | undefined;
     showSpinner: boolean;
     showTable: boolean;
+    showLoadingProgreesBar: boolean;
+    showPopupMenu: boolean =false;
+    @ViewChild('popupmenu') popupmenu: PopupMenu;
+    currentRow: any | undefined;
 
-    constructor(private jsons: JsonDataService, public dialog: MdDialog, public snackBar: MatSnackBar) { }
 
-    ngOnInit() {
-        this.jsons.setApiPath();
+    constructor(private jsons: JsonDataService, public dialog: MdDialog, public snackBar: MatSnackBar) {
+        this.showSpinner = false;
+        this.showTable = false;
+        this.showLoadingProgreesBar = false;
     }
+
+    
 
     SetControlState(loadingData: boolean) {
         if (loadingData) {
@@ -47,19 +56,19 @@ export class JsonTable implements OnInit {
         }
     }
 
-    getAllRecords() {
+    GetAllRecords() {
         this.SetControlState(true);
         this.jsons.getAllJsons()
-            .subscribe(jsonResponse => this.initialiseData(jsonResponse));
+            .subscribe(jsonResponse => this.InitialiseData(jsonResponse));
 
     }
 
-    getFilteredRecords(criterio: string, searchTerm: string) {
+    GetFilteredRecords(criterio: string, searchTerm: string) {
         this.SetControlState(true);
-        this.jsons.getSpecificJsons(criterio, searchTerm).subscribe(response => this.initialiseData(response));
+        this.jsons.getSpecificJsons(criterio, searchTerm).subscribe(response => this.InitialiseData(response));
     }
 
-    initialiseData(data: JsonDataSummary[]) {
+    InitialiseData(data: JsonDataSummary[]) {
         this.jsondata = data;
         this.exampleDatabase = new JsonDatabase(this.jsondata);
         this.dataSource = new JsonDataSource(this.exampleDatabase);
@@ -71,29 +80,58 @@ export class JsonTable implements OnInit {
                 if (!this.dataSource) { return; }
                 this.dataSource.filter = this.filter.nativeElement.value;
             });
+
         this.SetControlState(false);
     }
 
-    editJSON(row: any) {
-        let datakey = row.dataKey;
+    PopupMenuAction(action: number) {
+        if (action === 1) {
+            this.EditJSON(this.currentRow);
+        } else if (action === 2) {
+            this.CopyJSON(this.currentRow);
+        }
+    }
+
+    CopyJSON(row: any) {
+        let datakey = '';
+        let callphaseid = '';
+        let callid = '';
+        let qualifier = '';
+        let id = row.id;
+        let tbName = '';
+        this.jsons.getJsonData(id).subscribe(data => this.EditJsonData(id, datakey, callphaseid, callid, qualifier, data, tbName, row));
+    }
+
+
+    EditJSON(row: any) {
+        this.showLoadingProgreesBar = true;
+        let datakey = row.dataKey === 'NULL' ? "" : row.dataKey;
         let callphaseid = row.callPhaseID === 'NULL' ? '' : row.callPhaseID;
         let callid = row.callID === 'NULL' ? '' : row.callID;
         let qualifier = row.qualifier === 'NULL' ? '' : row.qualifier;
         let id = row.id;
         let tbName = row.tableName === 'NULL' ? '' : row.tableName;
-        this.jsons.getJsonData(datakey).subscribe(data => this.editJsonData(id, datakey, callphaseid, callid, qualifier, data, tbName, row));
+        this.jsons.getJsonData(id).subscribe(data => this.EditJsonData(id, datakey, callphaseid, callid, qualifier, data, tbName, row));
     }
 
-    editJsonData(_id: number, dk: string, cpid: string, cid: string, qlf: string, returnedData: string, _tableName: string, originalRow: any) {
+    EditJsonData(_id: number, dk: string, cpid: string, cid: string, qlf: string, returnedData: string, _tableName: string, originalRow: any) {
+        this.showLoadingProgreesBar = false;
         this.dialog.open(JsonEdit, {
             width: '80%',
             height: '95%',
             data: { id: _id, dataKey: dk, callPhaseID: cpid, qualifier: qlf, callID: cid, jsonData: returnedData, tableName: _tableName }
         })
-            .afterClosed().subscribe(res => this.saveJSON(res, originalRow));
+            .afterClosed().subscribe(res => this.SaveJSON(res, originalRow));
     }
 
-    saveJSON(js: JsonDataSummary, tableRow: any) {
+    ShowPopupMenu(row: any, event: MouseEvent) {
+        let x: number = event.clientX;
+        let y: number = event.clientY;
+        this.popupmenu.SetPositionAndShowPopupMenu(x, y);
+        this.currentRow = row;
+    }
+
+    SaveJSON(js: JsonDataSummary, tableRow: any) {
         try {
             if (js) {
                 let checkJSONSyntax = JSON.parse(js.data);
