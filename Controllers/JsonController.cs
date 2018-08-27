@@ -55,7 +55,7 @@ namespace PSKEJSE.Controllers
         public JsonResult GetAllJsons()
         {
             con = GetConnection();
-            SqlDataAdapter sda = new SqlDataAdapter("SELECT CallID, CallPhaseID, Data, DataKey, ID, Qualifier, TableName FROM JsonData", con);
+            SqlDataAdapter sda = new SqlDataAdapter("SELECT CallID, CallPhaseID, Data, DataKey, ID, Qualifier, TableName FROM JsonData ORDER BY Id", con);
             DataSet ds = new DataSet();
 
             try
@@ -152,34 +152,56 @@ namespace PSKEJSE.Controllers
                 MissingMemberHandling = MissingMemberHandling.Ignore
             };
             var jItem = JsonConvert.DeserializeObject<JsonDataSummary>(jsObj.ToString(), JSONDeserialisationSettings);
+
+            string dkName = "";
+            if (String.IsNullOrWhiteSpace(jItem.DataKey))
+                return StatusCode(500, "Error while updating JSON: Field DataKey is mandatory");
+            else
+                dkName = jItem.DataKey.Replace("'", "''");
+
+            string tblName = "";
+            if (String.IsNullOrWhiteSpace(jItem.TableName))
+                return StatusCode(500, "Error while updating JSON: Field TableName is mandatory");
+            else
+                tblName = jItem.TableName.Replace("'", "''");
+
+
             string jsonData = String.IsNullOrWhiteSpace(jItem.Data) ? "NULL" : jItem.Data.Replace("'", "''");
-            string dkName = String.IsNullOrWhiteSpace(jItem.DataKey) ? "NULL" : jItem.DataKey.Replace("'", "''");
-            string tblName = String.IsNullOrWhiteSpace(jItem.TableName) ? "NULL" : jItem.TableName.Replace("'", "''");
             string callphaseid = jItem.CallPhaseID > 0 ? jItem.CallPhaseID.ToString() : "NULL";
             string callid = jItem.CallID > 0 ? jItem.CallID.ToString() : "NULL";
             string qualifier = String.IsNullOrWhiteSpace(jItem.Qualifier) ? "NULL" : jItem.Qualifier.Replace("'", "''");
-            string sqlStatement = $"UPDATE JsonData SET Data='{jsonData}', DataKey='{dkName}', TableName='{tblName}', CallID={callid}, CallPhaseID={callphaseid}, Qualifier='{qualifier}' WHERE id='{jItem.ID}'";
             try
             {
+                string sqlStatement = $"SELECT Count(id) FROM JsonData WHERE id<>{id} and DataKey='{dkName}'";
                 con = GetConnection();
                 con.Open();
-                tran = con.BeginTransaction("PSKEJSE");
+                cmd = new SqlCommand(sqlStatement, con);
+
+                int result = (int)cmd.ExecuteScalar();
+                if (result > 0)
+                    return StatusCode(500, $"Error while updating JSON to database: DataKey {dkName} already exists!!!");
+
+                sqlStatement = $"UPDATE JsonData SET Data='{jsonData}', DataKey='{dkName}', TableName='{tblName}', CallID={callid}, CallPhaseID={callphaseid}, Qualifier='{qualifier}' WHERE id={jItem.ID}";
+
+                con = GetConnection();
+                con.Open();
+                tran = con.BeginTransaction($"PSKEJSE - Update JSON ID {jItem.ID}");
                 cmd = new SqlCommand(sqlStatement, con, tran);
 
                 int rows = cmd.ExecuteNonQuery();
                 if (rows > 1)
                 {
                     tran.Rollback();
-                    throw new Exception($"{jItem.ID} was found more than once in table JsonData");
+                    return StatusCode(500, "Error while updating JSON: Duplicate ID detected");
                 }
                 else if (rows < 1)
                 {
-                    tran.Rollback();
-                    return NotFound();
+                    tran?.Rollback();
+                    return NotFound($"Error while updating JSON: ID {jItem.ID} was not found");
                 }
                 else
                 {
-                    tran.Commit();
+                    tran?.Commit();
                     return NoContent();
                 }
             }
@@ -191,6 +213,90 @@ namespace PSKEJSE.Controllers
             }
         }
 
+        [HttpPost]
+        public IActionResult Post([FromBody] Object jsObj)
+        {
+            if (jsObj == null) return BadRequest("Error while saving new JSON to database: jsObj is null");
+            try
+            {
+
+                var JSONDeserialisationSettings = new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore,
+                    MissingMemberHandling = MissingMemberHandling.Ignore
+                };
+                var jItem = JsonConvert.DeserializeObject<JsonDataSummary>(jsObj.ToString(), JSONDeserialisationSettings);
+                string dkName = "";
+                if (String.IsNullOrWhiteSpace(jItem.DataKey))
+                    return StatusCode(500, "Error while saving new JSON to database: Field DataKey is mandatory");
+                else
+                    dkName = jItem.DataKey.Replace("'", "''");
+
+                string tblName = "";
+                if (String.IsNullOrWhiteSpace(jItem.TableName))
+                    return StatusCode(500, "Error while saving new JSON to database: Field TableName is mandatory");
+                else
+                    tblName = jItem.TableName.Replace("'", "''");
+
+                string jsonData = String.IsNullOrWhiteSpace(jItem.Data) ? "NULL" : jItem.Data.Replace("'", "''");
+                string callphaseid = jItem.CallPhaseID > 0 ? jItem.CallPhaseID.ToString() : "NULL";
+                string callid = jItem.CallID > 0 ? jItem.CallID.ToString() : "NULL";
+                string qualifier = String.IsNullOrWhiteSpace(jItem.Qualifier) ? "NULL" : jItem.Qualifier.Replace("'", "''");
+                string sqlStatement = $"SELECT Count(id) FROM JsonData WHERE DataKey='{dkName}'";
+                con = GetConnection();
+                con.Open();
+                cmd = new SqlCommand(sqlStatement, con);
+                int result = (int)cmd.ExecuteScalar();
+                if (result > 0)
+                    return StatusCode(500, $"Error while saving new JSON to database: Datakey {dkName} already exists");
+
+                sqlStatement = $"INSERT INTO JsonData (Data,DataKey,TableName,CallID,CallPhaseID,Qualifier) VALUES ('{jsonData}','{dkName}','{tblName}',{callid},{callphaseid},'{qualifier}')";
+                tran = con.BeginTransaction("PSKEJSE - Adding new JSON");
+                cmd = new SqlCommand(sqlStatement, con, tran);
+                cmd.ExecuteNonQuery();
+                tran.Commit();
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                tran?.Rollback();
+                return StatusCode(500, $"Error while saving new JSON to database: {ex.Message} ");
+            }
+            finally
+            {
+                tran?.Dispose();
+                cmd?.Dispose();
+                CloseConnection(con);
+            }
+
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+            SqlConnection con = GetConnection();
+            string sqlCommandText = $"DELETE FROm JsonData WHERE id={id}";
+            try
+            {
+                con.Open();
+                tran = con.BeginTransaction();
+                SqlCommand sqlCommand = new SqlCommand(sqlCommandText, con, tran);
+                sqlCommand.ExecuteNonQuery();
+                tran.Commit();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                tran?.Rollback();
+                return StatusCode(500, ex.Message);
+            }
+            finally
+            {
+                cmd?.Dispose();
+                tran?.Dispose();
+                CloseConnection(con);
+            }
+        }
 
         private string BuildSQLStatement(int criterio, string filter)
         {
@@ -214,7 +320,8 @@ namespace PSKEJSE.Controllers
                 default:
                     break;
             }
-            return finalStatement;
+            string orderby = " ORDER BY Id";
+            return string.Concat(finalStatement, orderby);
         }
 
     }

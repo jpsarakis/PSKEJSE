@@ -7,10 +7,13 @@
 <body>
     <h1 md-dialog-title>{{data.status}} {{data.statusText}}</h1>
     <hr />
-    <p>at {{data.url}}</p>
+    <p>at: <u>{{data.url}}</u></p>
     <div class="mainContent">
         <div md-dialog-content>
-            {{ data.body }}
+            <div id="errorMessage">
+                <p>Error Details</p>
+            </div>
+            {{data.body}}
         </div>
     </div>
     <div align="center" style="padding-top:2em">

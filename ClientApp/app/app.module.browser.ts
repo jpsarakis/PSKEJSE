@@ -6,7 +6,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {
     MdToolbarModule, MdSelectModule, MdFormFieldModule, MdInputModule, MdButtonModule, MatProgressSpinnerModule,
     MatGridListModule, MatDialogModule, MatIconModule, MatTableModule, MatSnackBarModule, MdProgressBarModule
-    , MdTooltipModule} from '@angular/material';
+    , MdTooltipModule,MdCheckboxModule} from '@angular/material';
 
 @NgModule({
     bootstrap: [AppComponent],
@@ -26,7 +26,8 @@ import {
         AppModuleShared,
         MatSnackBarModule,
         MdProgressBarModule,
-        MdTooltipModule
+        MdTooltipModule,
+        MdCheckboxModule
     ],
     providers: [
         { provide: 'BASE_URL', useFactory: getBaseUrl }

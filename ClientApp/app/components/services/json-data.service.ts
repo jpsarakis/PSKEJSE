@@ -1,5 +1,5 @@
 ﻿import { Injectable, Inject, Component } from '@angular/core';
-import { Headers, Http, Response } from '@angular/http';
+import { Headers, Http, Response, RequestOptions } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
@@ -16,7 +16,7 @@ export class JsonDataService {
         this.apiURL = "api/json/";
     }
 
-    
+
     getAllJsons(): Observable<JsonDataSummary[]> {
         return this.http.get(this.apiURL + 'GetAllJsons')
             .map(res => res.json() as JsonDataSummary[])
@@ -44,7 +44,7 @@ export class JsonDataService {
             });
     }
 
-    updateJSONData(jsonItem:JsonDataSummary): Observable<string> {
+    updateJSONData(jsonItem: JsonDataSummary): Observable<string> {
         let _headers = new Headers({ 'Content-Type': 'application/json' });
         return this.http
             .put(this.apiURL + `${jsonItem.id}`,
@@ -57,14 +57,41 @@ export class JsonDataService {
             });
     }
 
+    addJSON(jsonItem: JsonDataSummary): Observable<string> {
+        let _headers = new Headers({ 'Content-Type': 'application/json' });
+        return this.http
+            .post(this.apiURL,
+            jsonItem,
+            { headers: _headers })
+            .map(t => t.json())
+            .catch(err => {
+                this.showException(err);
+                return Observable.of<string>();
+            });
+    }
+
+    deleteJSON(id: number) {
+        let headers = new Headers();
+        headers.append('Content-Type', 'application/json');
+        let options = new RequestOptions({ headers: headers });
+        let url: string = this.apiURL + `${id}`;
+        return this.http.delete(url,options)
+            .catch(e => {
+                this.showException(e);
+                return Observable.of<JsonDataSummary>();
+            });
+
+    }
+
+
     showException(err: Response) {
         let dialogRef = this.dialog.open(ExceptionDialog, {
             width: '50%',
-            height: '90%',
+            height: '50%',
             data: { status: err.status, statusText: err.statusText, url: err.url, body: err.text() }
         });
     }
- 
+
 }
 
 export interface JsonDataSummary {

@@ -1,14 +1,16 @@
-﻿.mainContent {
-    background-color: beige;
-}
-
-h1 {
+﻿h1 {
     color: red;
 }
 
-p {
-    font-weight: 700;
+#errorMessage {
+    text-align: center;
+    width: 100%;
 }
+
+#errorMessage p{
+    color:darkred;
+}
+
 
 hr {
     height: 10px;

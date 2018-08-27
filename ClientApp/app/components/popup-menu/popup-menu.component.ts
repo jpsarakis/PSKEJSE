@@ -44,12 +44,13 @@ export class PopupMenu {
     }
 
 
-    private HidePopupMenu() {
+    public HidePopupMenu() {
         this.isPopupMenuVisible = 'no';
-        // setTimeout(() => {
-        //     this.showPopupMenu = false;
-        // }, 1000);
+    }
 
+    public ResetPopupMenu() {
+        this.showPopupMenu = false;
+        this.isPopupMenuVisible = 'no';
     }
 
     SetPositionAndShowPopupMenu(x: number, y: number) {

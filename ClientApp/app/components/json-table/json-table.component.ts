@@ -22,20 +22,21 @@ import { PopupMenu } from '../popup-menu/popup-menu.component';
     styleUrls: ['./json-table.component.css'],
     providers: [JsonDataService]
 })
-export class JsonTable  {
+export class JsonTable {
 
     dataSource: JsonDataSource | null;
-    exampleDatabase: JsonDatabase | undefined;
+    jsonDatabase: JsonDatabase | undefined;
     @ViewChild('filter') filter: ElementRef;
     displayedColumns = ['id', 'dataKey', 'callID', 'callPhaseID', 'qualifier', 'tableName'];
     jsondata: JsonDataSummary[] | undefined;
     showSpinner: boolean;
     showTable: boolean;
     showLoadingProgreesBar: boolean;
-    showPopupMenu: boolean =false;
     @ViewChild('popupmenu') popupmenu: PopupMenu;
     currentRow: any | undefined;
-
+    currentSearchMethod: number;
+    currentSearcCriterio: string;
+    currentSearchTerm: string;
 
     constructor(private jsons: JsonDataService, public dialog: MdDialog, public snackBar: MatSnackBar) {
         this.showSpinner = false;
@@ -43,7 +44,7 @@ export class JsonTable  {
         this.showLoadingProgreesBar = false;
     }
 
-    
+
 
     SetControlState(loadingData: boolean) {
         if (loadingData) {
@@ -57,21 +58,26 @@ export class JsonTable  {
     }
 
     GetAllRecords() {
+        this.popupmenu.ResetPopupMenu();
+        this.currentSearchMethod = 1;
         this.SetControlState(true);
         this.jsons.getAllJsons()
             .subscribe(jsonResponse => this.InitialiseData(jsonResponse));
-
     }
 
     GetFilteredRecords(criterio: string, searchTerm: string) {
+        this.popupmenu.ResetPopupMenu();
+        this.currentSearchMethod = 2;
+        this.currentSearcCriterio = criterio;
+        this.currentSearchTerm = searchTerm;
         this.SetControlState(true);
         this.jsons.getSpecificJsons(criterio, searchTerm).subscribe(response => this.InitialiseData(response));
     }
 
     InitialiseData(data: JsonDataSummary[]) {
         this.jsondata = data;
-        this.exampleDatabase = new JsonDatabase(this.jsondata);
-        this.dataSource = new JsonDataSource(this.exampleDatabase);
+        this.jsonDatabase = new JsonDatabase(this.jsondata);
+        this.dataSource = new JsonDataSource(this.jsonDatabase);
 
         Observable.fromEvent(this.filter.nativeElement, 'keyup')
             .debounceTime(150)
@@ -84,26 +90,34 @@ export class JsonTable  {
         this.SetControlState(false);
     }
 
-    PopupMenuAction(action: number) {
-        if (action === 1) {
-            this.EditJSON(this.currentRow);
-        } else if (action === 2) {
-            this.CopyJSON(this.currentRow);
+    DeleteJSON() {
+        let row=this.currentRow;
+        let deleteRecord = confirm('Are you sure you want to delete this record?');
+        if (deleteRecord) {
+            this.jsons.deleteJSON(row.id).subscribe(r => {
+                if (this.jsonDatabase)
+                    this.jsonDatabase.deleteJson(row.id);
+                this.snackBar.open('Record was deleted successfully!', '', { duration: 3000 });
+                
+            });
+            
         }
     }
 
-    CopyJSON(row: any) {
+    CopyJSON() {
+        let row=this.currentRow;
         let datakey = '';
         let callphaseid = '';
         let callid = '';
         let qualifier = '';
         let id = row.id;
         let tbName = '';
-        this.jsons.getJsonData(id).subscribe(data => this.EditJsonData(id, datakey, callphaseid, callid, qualifier, data, tbName, row));
+        this.jsons.getJsonData(id).subscribe(data => this.EditJsonData(id, datakey, callphaseid, callid, qualifier, data, tbName, row,true));
     }
 
 
-    EditJSON(row: any) {
+    EditJSON() {
+        let row=this.currentRow;
         this.showLoadingProgreesBar = true;
         let datakey = row.dataKey === 'NULL' ? "" : row.dataKey;
         let callphaseid = row.callPhaseID === 'NULL' ? '' : row.callPhaseID;
@@ -111,30 +125,51 @@ export class JsonTable  {
         let qualifier = row.qualifier === 'NULL' ? '' : row.qualifier;
         let id = row.id;
         let tbName = row.tableName === 'NULL' ? '' : row.tableName;
-        this.jsons.getJsonData(id).subscribe(data => this.EditJsonData(id, datakey, callphaseid, callid, qualifier, data, tbName, row));
+        this.jsons.getJsonData(id).subscribe(data => this.EditJsonData(id, datakey, callphaseid, callid, qualifier, data, tbName, row,false));
     }
 
-    EditJsonData(_id: number, dk: string, cpid: string, cid: string, qlf: string, returnedData: string, _tableName: string, originalRow: any) {
+    EditJsonData(_id: number, dk: string, cpid: string, cid: string, qlf: string, returnedData: string, _tableName: string, originalRow: any, addNewJson:boolean) {
         this.showLoadingProgreesBar = false;
-        this.dialog.open(JsonEdit, {
+        let dialog = this.dialog.open(JsonEdit, {
             width: '80%',
             height: '95%',
-            data: { id: _id, dataKey: dk, callPhaseID: cpid, qualifier: qlf, callID: cid, jsonData: returnedData, tableName: _tableName }
-        })
-            .afterClosed().subscribe(res => this.SaveJSON(res, originalRow));
+            data: { id: _id, dataKey: dk, callPhaseID: cpid, qualifier: qlf, callID: cid, jsonData: returnedData, tableName: _tableName, addnewJson: addNewJson }
+        });
+        if (addNewJson) {
+            dialog.afterClosed().subscribe(res => this.SaveNewJSON(res, dialog.componentInstance.uglifyChk.checked));
+        } else {
+            dialog.afterClosed().subscribe(res => this.SaveJSON(res, originalRow, dialog.componentInstance.uglifyChk.checked));
+        }
+
     }
 
     ShowPopupMenu(row: any, event: MouseEvent) {
         let x: number = event.clientX;
         let y: number = event.clientY;
-        this.popupmenu.SetPositionAndShowPopupMenu(x, y);
         this.currentRow = row;
+        this.popupmenu.SetPositionAndShowPopupMenu(x, y);
     }
 
-    SaveJSON(js: JsonDataSummary, tableRow: any) {
+    PopupMenuAction(action: number) {
+        if (action === 1) {
+            this.EditJSON();
+        } else if (action === 2) {
+            this.CopyJSON();
+        } else if (action === 3) {
+            this.DeleteJSON();
+        }
+        else {
+            alert('Unknown Action');
+        }
+    }
+
+    SaveJSON(js: JsonDataSummary, tableRow: any, uglyfyjson:boolean) {
         try {
             if (js) {
-                let checkJSONSyntax = JSON.parse(js.data);
+                let data=JSON.parse(js.data);
+                if (uglyfyjson) {
+                    js.data = JSON.stringify(data, null, 0);
+                }
                 this.jsons.updateJSONData(js)
                     .subscribe(r => {
                         tableRow.dataKey = js.dataKey === "" ? 'NULL' : js.dataKey; console.log(js.dataKey);
@@ -143,6 +178,33 @@ export class JsonTable  {
                         tableRow.qualifier = js.qualifier === "" ? 'NULL' : js.qualifier;
                         tableRow.tableName = js.tableName === "" ? 'NULL' : js.tableName;
                         this.snackBar.open('Database was updated successfully!', '', { duration: 3000 });
+                    });
+            }
+        } catch (e) {
+            this.dialog.open(ErrorDialog, {
+                width: '400px',
+                data: { errorMessage: e }
+            });
+        }
+    }
+
+    SaveNewJSON(js: JsonDataSummary, uglyfyjson: boolean) {
+        try {
+            if (js) {
+                let data = JSON.parse(js.data);
+                if (uglyfyjson) {
+                    js.data = JSON.stringify(data, null, 0);
+                }
+                this.jsons.addJSON(js)
+                    .subscribe(r => {
+                        this.snackBar.open('New JSON was saved!', '', { duration: 3000 });
+                        if (this.currentSearchMethod === 1) {
+                            this.GetAllRecords();
+                        } else if (this.currentSearchMethod === 2) {
+                            this.GetFilteredRecords(this.currentSearcCriterio, this.currentSearchTerm);
+                        } else {
+                            alert(`Unknown Search Method: ${this.currentSearchMethod}`);
+                        }
                     });
             }
         } catch (e) {
@@ -173,15 +235,26 @@ export class JsonDatabase {
         }
     }
 
-    /** Adds a new user to the database. */
-    addJson(index: number) {
+    /** Adds a new json entry to the database. */
+    private addJson(index: number) {
         const copiedData = this.data.slice();
         let d = this.createNewJson(index);
         copiedData.push(d);
         this.dataChange.next(copiedData);
     }
 
-    createNewJson(index: number): JsonDataSummary {
+    /**
+     * Removes a json entry form the database
+     * @param jsonID The id of the entry to be removed
+     */
+    deleteJson(jsonID: number) {
+        const updatedData = this.data.slice();
+        let index: number = updatedData.findIndex(j => j.id === jsonID);
+        updatedData.splice(index, 1);
+        this.dataChange.next(updatedData);
+    }
+
+    private createNewJson(index: number): JsonDataSummary {
 
         return {
             id: this.jsondata[index].id,

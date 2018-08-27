@@ -5,7 +5,7 @@ import { AppComponent } from './components/app/app.component';
 import {
     MdToolbarModule, MdSelectModule, MdFormFieldModule, MdInputModule, MdButtonModule, MatProgressSpinnerModule,
     MatGridListModule, MatDialogModule, MatIconModule, MatTableModule, MatSnackBarModule, MdProgressBarModule
-    , MdTooltipModule} from '@angular/material';
+    , MdTooltipModule,MdCheckboxModule} from '@angular/material';
 
 @NgModule({
     bootstrap: [ AppComponent ],
@@ -24,7 +24,9 @@ import {
         AppModuleShared,
         MatSnackBarModule,
         MdProgressBarModule,
-        MdTooltipModule
+        MdTooltipModule,
+        MdSelectModule,
+        MdCheckboxModule
         
     ]
 })

@@ -1,26 +1,25 @@
 ﻿<div style="height:100%;">
     <md-form-field floatPlaceholder="auto" style="width:40%">
-        <input mdInput #dataKey [(ngModel)]="jsonItem.dataKey" (change)="hideSaveButton()" placeholder="Data Key" required>
+        <input mdInput #dataKey [(ngModel)]="jsonItem.dataKey" (change)="hideSaveButton()" (keyup)="calculateDataKey()" placeholder="Data Key" required readonly>
     </md-form-field>
     <md-form-field floatPlaceholder="auto" style="width:5%">
-        <input mdInput #callID [(ngModel)]="jsonItem.callID" (change)="hideSaveButton()" placeholder="Call ID">
+        <input mdInput #callID [(ngModel)]="jsonItem.callID" (change)="hideSaveButton()" (keyup)="calculateDataKey()" placeholder="Call ID">
     </md-form-field>
     <md-form-field floatPlaceholder="auto" style="width:10%">
-        <input mdInput #callphaseID [(ngModel)]="jsonItem.callPhaseID" (change)="hideSaveButton()" placeholder="Callphase ID">
+        <input mdInput #callphaseID [(ngModel)]="jsonItem.callPhaseID" (change)="hideSaveButton()" (keyup)="calculateDataKey()" placeholder="Callphase ID">
     </md-form-field>
     <md-form-field floatPlaceholder="auto">
-        <input mdInput #qualifier [(ngModel)]="jsonItem.qualifier"  (change)="hideSaveButton()" placeholder="Qualifier ">
+        <input mdInput #qualifier [(ngModel)]="jsonItem.qualifier"  (change)="hideSaveButton()" (keyup)="calculateDataKey()" placeholder="Qualifier ">
     </md-form-field>
     <md-form-field floatPlaceholder="auto" style="width:20%">
-        <input mdInput #tableName [(ngModel)]="jsonItem.tableName" (change)="hideSaveButton()" placeholder="Table Name" required>
+        <input mdInput #tableName [(ngModel)]="jsonItem.tableName"  (change)="hideSaveButton()" (keyup)="calculateDataKey()" placeholder="Table Name" required>
     </md-form-field>
-        <p [style.display]="isJSONInvalid?'block':'none'" style="font-family:Helvetica Neue,sans-serif;text-align:center;font-size:16px;font-weight:700;color:orangered">INVALID JSON</p>
-    <ace-editor 
-                [(text)]="jsonItem.data" 
-                style="height:85%;" 
+    <p [style.display]="isJSONInvalid?'block':'none'" style="font-family:Helvetica Neue,sans-serif;text-align:center;font-size:16px;font-weight:700;color:orangered">INVALID JSON</p>
+    <ace-editor [(text)]="jsonItem.data"
+                style="height:85%;"
                 [mode]="'json'"
                 [autoUpdateContent]="true"
-                #aceeditor 
+                #aceeditor
                 (textChanged)="onAceEditorTextChanged($event)">
     </ace-editor>
     <div class="jsop-edit-toolbar" style="display:flex; flex-direction:row">
@@ -30,6 +29,7 @@
         <button md-button (click)="pretifyJSON()" color="accent" [disabled]="isJSONInvalid">Prettify JSON</button>
         <md-icon color="primary" style="margin-top:5px;margin-left:1em;opacity:0" [@jsonSaveNotificationState]="saveNotificationState">verified_user</md-icon><p [@jsonSaveNotificationState]="saveNotificationState" style="margin-top:6px;color:forestgreen;opacity:0">Successfully updated JSON</p>
         <span style="flex:1 0 auto;"></span>
+        <md-checkbox #uglify style="margin-top: 1em;margin-right: 50px" (change)="changeUglifyPreference()">Uglify JSON on <u>Save &amp; Close</u></md-checkbox>
         <md-select placeholder="Theme" [(ngModel)]="aceTheme" (change)="changeTheme()">
             <md-option *ngFor="let theme of aceThemes" [value]="theme.value">
                 {{ theme.description }}

@@ -10,7 +10,7 @@ import { HttpClientModule } from '@angular/common/http';
 import {
     MdToolbarModule, MdSelectModule, MdFormFieldModule, MD_PLACEHOLDER_GLOBAL_OPTIONS, MdInputModule, MdButtonModule,
     MatProgressSpinnerModule, MatGridListModule, MatDialogModule, MatIconModule, MatTableModule, MatSnackBarModule,
-    MdProgressBarModule, MdTooltipModule
+    MdProgressBarModule, MdTooltipModule,MdCheckboxModule
 } from '@angular/material';
 import { SearchJson, ErrorDialog } from './components/searchjson/searchjson.component';
 import { ExceptionDialog } from './components/services/json-data.service';
@@ -57,6 +57,7 @@ import { PopupMenu } from './components/popup-menu/popup-menu.component';
         MdProgressBarModule,
         MatSnackBarModule,
         MdTooltipModule,
+        MdCheckboxModule,
         RouterModule.forRoot([
             { path: '', redirectTo: 'home', pathMatch: 'full' },
             { path: 'home', component: HomeComponent },
