@@ -189,10 +189,10 @@ namespace PSKEJSE.Controllers
                 cmd = new SqlCommand(sqlStatement, con, tran);
 
                 int rows = cmd.ExecuteNonQuery();
-                if (rows > 1)
+                if (rows > 2)
                 {
                     tran.Rollback();
-                    return StatusCode(500, "Error while updating JSON: Duplicate ID detected");
+                    return StatusCode(500, $"Error while updating JSON: Was expecting up to 2 affected rows but the number of affected rows are '{rows}'. Aborted operation!");
                 }
                 else if (rows < 1)
                 {
