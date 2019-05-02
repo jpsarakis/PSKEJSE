@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <title>Exception</title>
+    <title>System Exception</title>
 </head>
 <body>
     <h1 md-dialog-title>{{data.status}} {{data.statusText}}</h1>
@@ -10,10 +10,12 @@
     <p>at: <u>{{data.url}}</u></p>
     <div class="mainContent">
         <div md-dialog-content>
-            <div id="errorMessage">
-                <p>Error Details</p>
+            <div id="exceptionMessage">
+                <p>Exception Details</p>
+                {{data.exceptionMessage}}
+                <p *ngIf="data.innerExceptionMessage!==null" style="margin-top:1em;">Inner Exception Details</p>
+                {{data.innerExceptionMessage}}
             </div>
-            {{data.body}}
         </div>
     </div>
     <div align="center" style="padding-top:2em">

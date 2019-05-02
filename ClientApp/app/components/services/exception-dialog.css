@@ -2,14 +2,27 @@
     color: red;
 }
 
-#errorMessage {
-    text-align: center;
+#exceptionMessage {
+    text-align: left;
     width: 100%;
 }
 
-#errorMessage p{
-    color:darkred;
+    #exceptionMessage p {
+        color: darkred;
+        font-weight:800;
+    }
+
+#innerExceptionMessage {
+    margin-top: 1em;
+    text-align: left;
+    width: 100%;
 }
+
+    #innerExceptionMessage p {
+        color: brown;
+        font-weight: 800;
+    }
+
 
 
 hr {

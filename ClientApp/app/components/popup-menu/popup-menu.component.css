@@ -6,9 +6,23 @@
     border-top-right-radius: 10px;
     font-weight: 700;
     font-size: large;
-    font-family:Constantia;
+    font-family: Constantia;
+    text-align:center;
+    display:flex;
+    flex-direction:row;
+    flex-flow:row nowrap;
+    flex-grow:1;
+
 }
 
+    .title i {
+        text-align: right;
+        vertical-align: text-bottom;
+    }
+
+    .title i:hover {
+        color: red;
+    }
 
 #menu-div {
     border-top-left-radius: 10px;
@@ -22,6 +36,8 @@
     background: white;
     background-color: lightsteelblue;
     border-bottom: none;
+    cursor: pointer;
+    z-index: 1;
 }
 
     #menu-div:after {
@@ -35,4 +51,3 @@
         left: -1px;
         position: absolute;
     }
-

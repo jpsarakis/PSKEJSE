@@ -1,7 +1,7 @@
 ﻿import { Component, Inject, ElementRef, ViewChild, OnInit } from '@angular/core';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { JsonDataSummary, JsonDataService } from '../services/json-data.service'
-import { MdDialogRef, MD_DIALOG_DATA, MdCheckbox } from '@angular/material';
+import { MdDialogRef, MD_DIALOG_DATA, MdCheckbox, fadeInContent } from '@angular/material';
 import 'brace';
 import "brace/mode/json";
 
@@ -26,6 +26,7 @@ export class JsonEdit implements OnInit {
 
     public aceTheme: string; // Must be public otherwise it causes issues during publish
     public isJSONInvalid: boolean; // Must be public otherwise it causes issues during publish
+    public canBeSaved: boolean; //Boolean that indicates if the user has filled in all required data in order to save the json
     public jsonItem: JsonDataSummary;
 
     @ViewChild('aceeditor') aceEditor: any;
@@ -107,6 +108,12 @@ export class JsonEdit implements OnInit {
 
     calculateDataKey() {
         this.jsonItem.dataKey = this.jsonItem.tableName;
+        if (this.jsonItem.tableName.trim() !== "") {
+            this.canBeSaved = true;
+        } else {
+            this.canBeSaved = false;
+        }
+
         if (this.jsonItem.qualifier && this.jsonItem.qualifier != "") {
             this.jsonItem.dataKey += "_q" + this.jsonItem.qualifier;
         }

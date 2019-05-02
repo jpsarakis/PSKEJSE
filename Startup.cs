@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using PSKEJSE.Extensions;
 
 namespace PSKEJSE
 {
@@ -43,7 +44,7 @@ namespace PSKEJSE
             }
 
             app.UseStaticFiles();
-
+            app.ConfigureExceptionHandling();
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

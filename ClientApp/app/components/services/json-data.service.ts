@@ -85,10 +85,11 @@ export class JsonDataService {
 
 
     showException(err: Response) {
-        let dialogRef = this.dialog.open(ExceptionDialog, {
+        let errMsg = JSON.parse(err.text());
+        this.dialog.open(ExceptionDialog, {
             width: '50%',
             height: '50%',
-            data: { status: err.status, statusText: err.statusText, url: err.url, body: err.text() }
+            data: { status: err.status, statusText: err.statusText, url: err.url, exceptionMessage: errMsg.ExceptionMessage, innerExceptionMessage: errMsg.InnerExceptionErrorMessage  }
         });
     }
 

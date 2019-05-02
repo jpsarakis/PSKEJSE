@@ -16,20 +16,28 @@ export class SearchJson {
     searchFilter: string;
     @ViewChild('jsontable') jsonTable: JsonTable;
 
-    constructor(public dialog: MdDialog) {
-    }
 
     criteria = [
-        { value: '0', description: 'All' },
-        { value: '1', description: 'CallID' },
-        { value: '2', description: 'CallPhase' },
-        { value: '3', description: 'DataKey' },
-        { value: '4', description: 'Qualifier' }
+        { value: 0, description: 'All' },
+        { value: 1, description: 'CallID' },
+        { value: 2, description: 'CallPhase' },
+        { value: 3, description: 'DataKey' },
+        { value: 4, description: 'Qualifier' }
     ];
+
+
+
+    constructor(public dialog: MdDialog) {
+        this.showSpinner = false;
+        this.searchCriterion = 0;
+        this.searchFilter = "";
+    }
+
+   
 
     searchJson() {
 
-        if (!this.searchCriterion || this.searchCriterion==0) {
+        if (this.searchCriterion==0) {
             this.jsonTable.GetAllRecords();
         }
         else {
@@ -43,7 +51,7 @@ export class SearchJson {
     }
 
     showError(message: string) {
-        let dialogRef = this.dialog.open(ErrorDialog, {
+        this.dialog.open(ErrorDialog, {
             width: '350px',
             data: { errorMessage: message }
         });
