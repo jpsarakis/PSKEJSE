@@ -11,7 +11,7 @@
         <Description>Application that edits json data for PSKE</Description>
         <DockerComposeProjectPath>docker-compose.dcproj</DockerComposeProjectPath>
         <Version>2.0.2</Version>
-        <AssemblyVersion>2.0.0.1</AssemblyVersion>
+        <AssemblyVersion>2.0.0.2</AssemblyVersion>
         <FileVersion>2.0.0.1</FileVersion>
     </PropertyGroup>
 
