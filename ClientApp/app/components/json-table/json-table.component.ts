@@ -24,7 +24,7 @@ import { PopupMenu } from '../popup-menu/popup-menu.component';
 })
 export class JsonTable {
 
-    dataSource: JsonDataSource | null;
+    dataSource: JsonDataSource | null | undefined;
     jsonDatabase: JsonDatabase | undefined;
     @ViewChild('filter') filter: ElementRef;
     displayedColumns = ['id', 'dataKey', 'callID', 'callPhaseID', 'qualifier', 'tableName'];
@@ -32,7 +32,7 @@ export class JsonTable {
     showSpinner: boolean;
     showTable: boolean;
     showLoadingProgreesBar: boolean;
-    @ViewChild('popupmenu') popupmenu: PopupMenu;
+    @ViewChild('popupmenu') popupmenu: PopupMenu = new PopupMenu;
     currentRow: any | undefined;
     currentSearchMethod: number;
     currentSearcCriterio: string;
@@ -42,6 +42,9 @@ export class JsonTable {
         this.showSpinner = false;
         this.showTable = false;
         this.showLoadingProgreesBar = false;
+        this.currentSearchMethod = 0;
+        this.currentSearcCriterio = "";
+        this.currentSearchTerm = "";
     }
 
 
@@ -62,7 +65,11 @@ export class JsonTable {
         this.currentSearchMethod = 1;
         this.SetControlState(true);
         this.jsons.getAllJsons()
-            .subscribe(jsonResponse => this.InitialiseData(jsonResponse));
+            .subscribe(jsonResponse => {
+                this.InitialiseData(jsonResponse);
+                let filter = this.filter.nativeElement as HTMLElement;
+                filter.dispatchEvent(new Event('keyup'));
+            });
     }
 
     GetFilteredRecords(criterio: string, searchTerm: string) {
@@ -71,7 +78,12 @@ export class JsonTable {
         this.currentSearcCriterio = criterio;
         this.currentSearchTerm = searchTerm;
         this.SetControlState(true);
-        this.jsons.getSpecificJsons(criterio, searchTerm).subscribe(response => this.InitialiseData(response));
+        this.jsons.getSpecificJsons(criterio, searchTerm).subscribe(response => {
+            this.InitialiseData(response);
+            let filter = this.filter.nativeElement as HTMLElement;
+            filter.dispatchEvent(new Event('keyup'));
+        });
+       
     }
 
     InitialiseData(data: JsonDataSummary[]) {
@@ -157,7 +169,8 @@ export class JsonTable {
             this.CopyJSON();
         } else if (action === 3) {
             this.DeleteJSON();
-        }
+        } else if (action === 0) {
+        }   //Do nothing, user choosed to close the menu
         else {
             alert('Unknown Action');
         }
@@ -172,8 +185,8 @@ export class JsonTable {
                 }
                 this.jsons.updateJSONData(js)
                     .subscribe(r => {
-                        tableRow.dataKey = js.dataKey === "" ? 'NULL' : js.dataKey; console.log(js.dataKey);
-                        tableRow.callPhaseID = js.callPhaseID === "" ? 'NULL' : js.callPhaseID; console.log(js.callPhaseID);
+                        tableRow.dataKey = js.dataKey === "" ? 'NULL' : js.dataKey;
+                        tableRow.callPhaseID = js.callPhaseID === "" ? 'NULL' : js.callPhaseID;
                         tableRow.callID = js.callID === "" ? 'NULL' : js.callID;
                         tableRow.qualifier = js.qualifier === "" ? 'NULL' : js.qualifier;
                         tableRow.tableName = js.tableName === "" ? 'NULL' : js.tableName;

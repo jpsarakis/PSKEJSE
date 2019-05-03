@@ -1,5 +1,5 @@
 ﻿<div id="menu-div" [style.display]="showPopupMenu?'block':'none'" #menudiv [style.left.px]="Xposition" [style.top.px]="YPosition" [@isPopupMenuVisible]="isPopupMenuVisible">
-    <div class="title"><span style="flex:1 1 auto;"></span>Actions<span style="flex:1 1 auto;"></span><i class="material-icons" mdTooltip="Close Menu">highlight_off</i></div>
+    <div class="title"><span style="flex:1 1 auto;"></span>Actions<span style="flex:1 1 auto;"></span><i class="material-icons" mdTooltip="Close Menu" (click)="ActionButtonClicked(0)">highlight_off</i></div>
     <button md-mini-fab color="primary" mdTooltip="Edit JSON" aria-label="Edit JSON" (click)="ActionButtonClicked(1)"><md-icon>create</md-icon></button>
     <button md-mini-fab color="accent" mdTooltip="Copy JSON" aria-label="Copy JSON" (click)="ActionButtonClicked(2)"><md-icon>add_circle_outline</md-icon></button>
     <button md-mini-fab color="warn" mdTooltip="Delete JSON" aria-label="Delete JSON" (click)="ActionButtonClicked(3)"><md-icon>cancel</md-icon></button>
