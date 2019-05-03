@@ -10,7 +10,7 @@
         <Product>PSKE JSON Editor</Product>
         <Description>Application that edits json data for PSKE</Description>
         <DockerComposeProjectPath>docker-compose.dcproj</DockerComposeProjectPath>
-        <Version>2.0.1</Version>
+        <Version>2.0.2</Version>
         <AssemblyVersion>2.0.0.1</AssemblyVersion>
         <FileVersion>2.0.0.1</FileVersion>
     </PropertyGroup>
